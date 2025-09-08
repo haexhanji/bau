@@ -1,39 +1,93 @@
 :root{
-  --bg:#FFFCF2;       /* 메인 배경 – 밝은 화이트 */
-  --card:#ffffff;     /* 카드 – 순수 화이트 */
-  --text:#333138;     /* 기본 텍스트 – 젯 블랙 */
-  --muted:#7d7c78;    /* 보조 텍스트 – 중간 톤 그레이 */
-  --border:#e0e0dc;   /* 연한 회색 보더 */
-  --accent:#4FB477;   /* 포인트 – 민트 */
+  /* OUSQUE showroom 무드 */
+  --bg:#24543D;        /* 깊은 그린 */
+  --card:#2A5E45;      /* 살짝 밝은 그린(카드/사이드바) */
+  --text:#FFF9EF;      /* 따뜻한 화이트 */
+  --muted:#C9D5CC;     /* 연한 세이지 그레이 */
+  --border:#2f6a50;    /* 저채도 그린 보더 */
+  --accent:#E0B41D;    /* 머스타드 옐로 포인트 */
 }
+
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,Arial,sans-serif;color:var(--text);background:var(--bg);}
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
+html,body{
+  margin:0;padding:0;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,Arial,sans-serif;
+  color:var(--text);background:var(--bg);
+}
+a{color:var(--text);text-decoration:none;opacity:.95;transition:opacity .18s}
+a:hover{opacity:1;text-decoration:underline}
+
 .container{max-width:1200px;margin:0 auto;padding:16px;}
-.header{position:sticky;top:0;z-index:20;background:rgba(255,252,242,.95);backdrop-filter:saturate(180%) blur(8px);border-bottom:1px solid var(--border);}
+
+.header{
+  position:sticky;top:0;z-index:20;
+  background:rgba(36,84,61,.88); /* 딥그린 투명 헤더 */
+  backdrop-filter:saturate(160%) blur(6px);
+  border-bottom:1px solid var(--border);
+}
 .header-inner{display:flex;align-items:center;gap:12px;padding:12px 16px;}
-.title{font-weight:700;font-size:20px;color:var(--accent);} /* 민트 포인트 */
-.subtitle{color:var(--muted);font-size:13px;margin-left:6px}
+.title{font-weight:800;font-size:20px;letter-spacing:.4px;color:var(--accent);} /* 로고/타이틀 머스타드 */
+.subtitle{color:var(--muted);font-size:12px;margin-left:6px}
+
 .layout{display:grid;grid-template-columns:1fr;gap:16px;padding:16px;}
 @media(min-width:900px){.layout{grid-template-columns:260px 1fr;}}
-.sidebar{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:8px;}
-.navbtn{display:flex;gap:10px;align-items:center;width:100%;padding:10px 12px;border-radius:12px;border:1px solid transparent;cursor:pointer;transition:all .2s;color:var(--text);}
-.navbtn:hover{background:var(--accent);color:#fff}
-.navbtn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.icon{width:18px;height:18px;display:inline-block;fill:var(--accent);}
-.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;}
-.card h2{margin:0 0 10px 0;font-size:18px;color:var(--accent);} /* 카드 제목 민트 */
+
+.sidebar{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;padding:8px;
+}
+
+.navbtn{
+  display:flex;gap:10px;align-items:center;width:100%;
+  padding:10px 12px;border-radius:12px;
+  border:1px solid transparent;cursor:pointer;transition:all .18s;
+  color:var(--text);
+}
+.navbtn:hover{
+  border-color:var(--accent);
+  background:linear-gradient(0deg, rgba(224,180,29,.12), rgba(224,180,29,.12));
+}
+.navbtn.active{
+  background:linear-gradient(0deg, rgba(224,180,29,.18), rgba(224,180,29,.18));
+  border-color:var(--accent);
+}
+.icon{width:18px;height:18px;display:inline-block}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;padding:18px;
+}
+.card h2{
+  margin:0 0 10px 0;font-size:18px;
+  color:var(--accent); /* 섹션 타이틀 머스타드 */
+  letter-spacing:.3px
+}
+
 .muted{color:var(--muted);font-size:13px}
+
 .iframe-wrap{position:relative;width:100%;padding-top:66%;}
 .iframe-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:12px}
-.footer{border-top:1px solid var(--border);background:#fff;padding:24px;margin-top:24px;color:var(--muted)}
+
+.footer{
+  border-top:1px solid var(--border);
+  background:#214D39; /* 본문보다 한 톤 어두운 그린 */
+  padding:24px;margin-top:24px;color:var(--muted)
+}
 .small{font-size:12px;color:var(--muted)}
-.notice{border:1px solid var(--border);border-radius:14px;padding:14px;margin:10px 0;background:#fff;}
+
+.notice{
+  border:1px solid var(--border);
+  border-radius:14px;padding:14px;margin:10px 0;
+  background:#224F3A; /* 공지 박스 */
+}
 .notice .date{font-size:12px;color:var(--muted)}
-.notice .title{font-weight:600;margin-top:4px;color:var(--accent);} /* 공지 제목 민트 */
+.notice .title{font-weight:700;margin-top:4px;color:var(--accent)}
 .notice .body{font-size:14px;margin-top:6px;color:var(--text)}
+
 .mobonly{display:inline-flex}
 @media(min-width:900px){.mobonly{display:none}}
-.menu{border:1px solid var(--border);padding:6px;border-radius:10px;color:var(--text)}
+
+.menu{border:1px solid var(--border);padding:6px;border-radius:10px}
 .hide{display:none}
