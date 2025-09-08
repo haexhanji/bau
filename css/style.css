@@ -1,19 +1,19 @@
 :root{
-  --bg:#F7F1F0;       /* 전체 배경 밝은 베이지 */
-  --card:#ffffff;     /* 카드 배경 화이트 */
-  --text:#262220;     /* 다크 브라운/블랙 텍스트 */
-  --muted:#C3A6A0;    /* 모브톤 보조 텍스트 */
-  --border:#E5E5E5;   /* 연한 그레이 보더 */
-  --accent:#A15C38;   /* 브라운 포인트 컬러 */
+  --bg:#FFFCF2;       /* 메인 배경 – 밝은 화이트 */
+  --card:#ffffff;     /* 카드 – 순수 화이트 */
+  --text:#333138;     /* 기본 텍스트 – 젯 블랙 */
+  --muted:#7d7c78;    /* 보조 텍스트 – 중간 톤 그레이 */
+  --border:#e0e0dc;   /* 연한 회색 보더 */
+  --accent:#4FB477;   /* 포인트 – 민트 */
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,Arial,sans-serif;color:var(--text);background:var(--bg);}
 a{color:var(--accent);text-decoration:none}
 a:hover{text-decoration:underline}
 .container{max-width:1200px;margin:0 auto;padding:16px;}
-.header{position:sticky;top:0;z-index:20;background:rgba(247,241,240,.95);backdrop-filter:saturate(180%) blur(8px);border-bottom:1px solid var(--border);}
+.header{position:sticky;top:0;z-index:20;background:rgba(255,252,242,.95);backdrop-filter:saturate(180%) blur(8px);border-bottom:1px solid var(--border);}
 .header-inner{display:flex;align-items:center;gap:12px;padding:12px 16px;}
-.title{font-weight:700;font-size:20px;color:var(--accent);} /* 타이틀 브라운 포인트 */
+.title{font-weight:700;font-size:20px;color:var(--accent);} /* 민트 포인트 */
 .subtitle{color:var(--muted);font-size:13px;margin-left:6px}
 .layout{display:grid;grid-template-columns:1fr;gap:16px;padding:16px;}
 @media(min-width:900px){.layout{grid-template-columns:260px 1fr;}}
@@ -23,16 +23,16 @@ a:hover{text-decoration:underline}
 .navbtn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .icon{width:18px;height:18px;display:inline-block;fill:var(--accent);}
 .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;}
-.card h2{margin:0 0 10px 0;font-size:18px;color:var(--accent);}
+.card h2{margin:0 0 10px 0;font-size:18px;color:var(--accent);} /* 카드 제목 민트 */
 .muted{color:var(--muted);font-size:13px}
 .iframe-wrap{position:relative;width:100%;padding-top:66%;}
 .iframe-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:12px}
 .footer{border-top:1px solid var(--border);background:#fff;padding:24px;margin-top:24px;color:var(--muted)}
 .small{font-size:12px;color:var(--muted)}
-.notice{border:1px solid var(--border);border-radius:14px;padding:14px;margin:10px 0;background:#ffffff;}
+.notice{border:1px solid var(--border);border-radius:14px;padding:14px;margin:10px 0;background:#fff;}
 .notice .date{font-size:12px;color:var(--muted)}
-.notice .title{font-weight:600;margin-top:4px;color:var(--accent);} /* 공지 제목 브라운 */
-.notice .body{font-size:14px;margin-top:6px;color:#262220}
+.notice .title{font-weight:600;margin-top:4px;color:var(--accent);} /* 공지 제목 민트 */
+.notice .body{font-size:14px;margin-top:6px;color:var(--text)}
 .mobonly{display:inline-flex}
 @media(min-width:900px){.mobonly{display:none}}
 .menu{border:1px solid var(--border);padding:6px;border-radius:10px;color:var(--text)}
