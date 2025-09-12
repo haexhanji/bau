@@ -1,10 +1,10 @@
 :root{
-  --bg:#000000;       /* 전체 배경 – 블랙 */
-  --card:#111111;     /* 카드 – 짙은 그레이 블랙 */
-  --text:#ffffff;     /* 메인 텍스트 – 화이트 */
-  --muted:#9ca3af;    /* 보조 텍스트 – 회색 */
-  --border:#222222;   /* 경계선 – 어두운 그레이 */
-  --accent:#ffffff;   /* 포인트 – 화이트 */
+  --bg:#f8fafc;       /* 전체 배경 – 밝은 톤 */
+  --card:#ffffff;     /* 카드 – 화이트 */
+  --text:#111827;     /* 메인 텍스트 – 딥 그레이 */
+  --muted:#6b7280;    /* 보조 텍스트 – 회색 */
+  --border:#e5e7eb;   /* 경계선 – 밝은 그레이 */
+  --accent:#111827;   /* 포인트 – 딥 그레이 */
 }
 *{box-sizing:border-box}
 html,body{
@@ -19,7 +19,7 @@ a:hover{opacity:.7;text-decoration:underline}
 
 .header{
   position:sticky;top:0;z-index:20;
-  background:rgba(0,0,0,.9);
+  background:rgba(255,255,255,.9);
   backdrop-filter:saturate(180%) blur(6px);
   border-bottom:1px solid var(--border);
 }
@@ -42,8 +42,8 @@ a:hover{opacity:.7;text-decoration:underline}
   border:1px solid transparent;cursor:pointer;transition:all .18s;
   color:var(--text);
 }
-.navbtn:hover{background:#ffffff;color:#000}
-.navbtn.active{background:#ffffff;color:#000;border-color:#ffffff}
+.navbtn:hover{background:#f3f4f6;color:var(--accent)}
+.navbtn.active{background:#e5e7eb;color:var(--accent);border-color:var(--border)}
 
 .icon{width:18px;height:18px;display:inline-block;fill:var(--accent);}
 
@@ -63,14 +63,14 @@ a:hover{opacity:.7;text-decoration:underline}
 
 .footer{
   border-top:1px solid var(--border);
-  background:#000;padding:24px;margin-top:24px;color:var(--muted)
+  background:#f9fafb;padding:24px;margin-top:24px;color:var(--muted)
 }
 .small{font-size:12px;color:var(--muted)}
 
 .notice{
   border:1px solid var(--border);
   border-radius:14px;padding:14px;margin:10px 0;
-  background:#111;
+  background:#ffffff;
 }
 .notice .date{font-size:12px;color:var(--muted)}
 .notice .title{font-weight:700;margin-top:4px;color:var(--accent);}
@@ -80,7 +80,4 @@ a:hover{opacity:.7;text-decoration:underline}
 @media(min-width:900px){.mobonly{display:none}}
 
 .menu{border:1px solid var(--border);padding:6px;border-radius:10px;color:var(--text)}
-.hide{display:none}
-
-.menu{border:1px solid var(--border);padding:6px;border-radius:10px}
 .hide{display:none}
