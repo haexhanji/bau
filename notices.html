@@ -6,7 +6,7 @@
   <title>백석예대 영상학부 졸업준비위원회 (영화콘텐츠, 영상미디어)</title>
   <link rel="stylesheet" href="css/style.css"/>
   <style>
-    /* 삭제 버튼 미니 스타일(필요시 조정) */
+    /* 삭제 버튼 스타일 */
     .notice-actions{ display:flex; gap:8px; margin-top:8px; }
     .btn-del{ font-size:12px; padding:4px 8px; border:1px solid #ef4444; color:#ef4444; background:#fff; border-radius:8px; cursor:pointer }
     .btn-del:hover{ background:#fee2e2 }
@@ -73,13 +73,12 @@
   </footer>
 
   <script>
-    // 최신 exec URL
+    // 최신 exec URL (네가 준 주소)
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyO4o5rlRJCynwnuQPUbW3ZSgODlmMl_jBNZXwHqBlOmhJaHv4GggYl8vwKbf1EzYNf/exec';
 
-    // 상태
-    let ADMIN_PWD = null; // 로그인 후 존재 → 삭제 버튼 표시
+    let ADMIN_PWD = null;
 
-    // 날짜 기본값 + 목록 로드
+    // 날짜 기본값 + 최초 로드
     document.addEventListener('DOMContentLoaded', () => {
       const $date = document.getElementById('ndate');
       if ($date) {
@@ -91,7 +90,7 @@
       loadNotices();
     });
 
-    // 목록 로드
+    // 목록 로드/렌더
     async function loadNotices(){
       try{
         const r = await fetch(`${SCRIPT_URL}?mode=list`, { cache:'no-store' });
@@ -131,7 +130,7 @@
       if(!ok){ alert('비밀번호가 올바르지 않습니다.'); return; }
       ADMIN_PWD = (pwd || '').trim();
       document.getElementById('adminBox').style.display = 'block';
-      loadNotices(); // 버튼 보이도록 다시 렌더
+      loadNotices(); // 삭제버튼 보이도록 재렌더
     });
     document.getElementById('adminCancel')?.addEventListener('click', () => {
       document.getElementById('adminBox').style.display = 'none';
@@ -145,19 +144,28 @@
       }catch(e){ console.error(e); return false; }
     }
 
-    // 업로드 (FormData)
+    // 업로드 (URL-encoded 전송)
     document.getElementById('noticeForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if(!ADMIN_PWD) return alert('관리자 인증이 필요합니다.');
-      const fd = new FormData(e.target);
-      fd.append('mode', 'add');
-      fd.append('pwd', (ADMIN_PWD || '').trim());
+      if (!ADMIN_PWD) return alert('관리자 인증이 필요합니다.');
+      const f = e.target;
+      const body = new URLSearchParams({
+        mode: 'add',
+        pwd: (ADMIN_PWD || '').trim(),
+        date: f.date.value,
+        title: f.title.value,
+        body: f.body.value
+      });
       try{
-        const r = await fetch(SCRIPT_URL, { method:'POST', body: fd });
+        const r = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+          body
+        });
         const j = await r.json();
         if(!j.ok) return alert('업로드 실패: ' + (j.error || 'UNKNOWN'));
         alert('업로드 완료');
-        e.target.reset();
+        f.reset();
         loadNotices();
       }catch(err){
         console.error(err);
@@ -165,20 +173,27 @@
       }
     });
 
-    // 삭제 (이벤트 위임)
+    // 삭제 (URL-encoded 전송)
     document.getElementById('noticeList')?.addEventListener('click', async (e) => {
       const btn = e.target.closest('.btn-del');
-      if(!btn) return;
-      if(!ADMIN_PWD) return alert('관리자 인증이 필요합니다.');
+      if (!btn) return;
+      if (!ADMIN_PWD) return alert('관리자 인증이 필요합니다.');
       const id = btn.getAttribute('data-id');
-      if(!id) return;
-      if(!confirm('정말 삭제할까요? 되돌릴 수 없습니다.')) return;
+      if (!id) return;
+      if (!confirm('정말 삭제할까요? 되돌릴 수 없습니다.')) return;
+
+      const body = new URLSearchParams({
+        mode: 'delete',
+        id,
+        pwd: (ADMIN_PWD || '').trim()
+      });
+
       try{
-        const fd = new FormData();
-        fd.append('mode','delete');
-        fd.append('id', id);
-        fd.append('pwd', (ADMIN_PWD || '').trim());
-        const r = await fetch(SCRIPT_URL, { method:'POST', body: fd });
+        const r = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+          body
+        });
         const j = await r.json();
         if(!j.ok) return alert('삭제 실패: ' + (j.error || 'UNKNOWN'));
         alert('삭제 완료');
@@ -190,6 +205,9 @@
     });
   </script>
 
+  <script src="js/app.js"></script>
+</body>
+</html>
   <script src="js/app.js"></script>
 </body>
 </html>
