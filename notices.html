@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>백석예대 영상학부 졸업준비위원회 (영화콘텐츠, 영상미디어)</title>
   <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    /* 삭제 버튼 미니 스타일(필요시 조정) */
+    .notice-actions{ display:flex; gap:8px; margin-top:8px; }
+    .btn-del{ font-size:12px; padding:4px 8px; border:1px solid #ef4444; color:#ef4444; background:#fff; border-radius:8px; cursor:pointer }
+    .btn-del:hover{ background:#fee2e2 }
+  </style>
 </head>
 <body>
   <header class="header">
@@ -16,11 +22,10 @@
 
   <div class="container layout">
     <aside id="sidebar" class="sidebar">
-      <a class="navbtn" data-route="movie" href="movie.html"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="2" width="20" height="20" rx="2" ry="2"/><circle cx="7" cy="7" r="1"/><circle cx="7" cy="12" r="1"/><circle cx="7" r="17" r="1"/><path d="M11 7h11M11 12h11M11 17h11"/></svg><span>영화콘텐츠</span></a>
+      <a class="navbtn" data-route="movie" href="movie.html"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="2" width="20" height="20" rx="2" ry="2"/><circle cx="7" cy="7" r="1"/><circle cx="7" cy="12" r="1"/><circle cx="7" cy="17" r="1"/><path d="M11 7h11M11 12h11M11 17h11"/></svg><span>영화콘텐츠</span></a>
       <a class="navbtn" data-route="media" href="media.html"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>영상미디어</span></a>
       <a class="navbtn" data-route="schedule" href="schedule.html"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>전체일정</span></a>
       <a class="navbtn" data-route="notices" href="notices.html"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 11l18-5v12L3 13v-2z"/><path d="M11 12v7"/></svg><span>공지사항 모음</span></a>
-
       <div class="card" style="margin-top:12px">
         <div class="small"><b>공통 공지 </b><br/> 현재 졸업심사 관련 수요조사가 진행 중입니다. 모든 학생은 반드시 기한 내에 조사에 참여해 주시기 바랍니다. <br><br> 🔔 앞으로 졸업준비위원회 관련 공지 및 수요조사는 해당 사이트에서 진행될 예정입니다.
         카카오톡이나 문자로도 안내해 드리겠지만, 일정과 공지사항은 사이트에서 계속 업데이트됩니다. 가장 정확하고 최신 정보는 사이트에서 직접 확인해 주시기 바랍니다.</div>
@@ -68,9 +73,13 @@
   </footer>
 
   <script>
-    // ★ 최신 배포 URL로 교체 필수
+    // 최신 exec URL
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyO4o5rlRJCynwnuQPUbW3ZSgODlmMl_jBNZXwHqBlOmhJaHv4GggYl8vwKbf1EzYNf/exec';
 
+    // 상태
+    let ADMIN_PWD = null; // 로그인 후 존재 → 삭제 버튼 표시
+
+    // 날짜 기본값 + 목록 로드
     document.addEventListener('DOMContentLoaded', () => {
       const $date = document.getElementById('ndate');
       if ($date) {
@@ -82,6 +91,7 @@
       loadNotices();
     });
 
+    // 목록 로드
     async function loadNotices(){
       try{
         const r = await fetch(`${SCRIPT_URL}?mode=list`, { cache:'no-store' });
@@ -92,20 +102,28 @@
     function renderNotices(items){
       const box = document.getElementById('noticeList');
       if(!box) return;
-      box.innerHTML = items.length ? items.map(it => `
-        <div class="notice">
+      if(!items.length){
+        box.innerHTML = '<div class="muted small">등록된 공지가 없습니다.</div>';
+        return;
+      }
+      const isAdmin = !!ADMIN_PWD;
+      box.innerHTML = items.map(it => `
+        <div class="notice" data-id="${it.id}">
           <div class="date">${escapeHtml(it.date || '')}</div>
           <div class="title">${escapeHtml(it.title || '')}</div>
           <div class="body">${it.body || ''}</div>
+          ${isAdmin ? `
+          <div class="notice-actions">
+            <button class="btn-del" data-id="${it.id}" aria-label="공지 삭제">삭제</button>
+          </div>` : ``}
         </div>
-      `).join('') : '<div class="muted small">등록된 공지가 없습니다.</div>';
+      `).join('');
     }
     function escapeHtml(str){
       return String(str).replace(/[&<>\"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
     }
 
-    // 관리자 모드
-    let ADMIN_PWD = null;
+    // 관리자 로그인
     document.getElementById('adminLogin')?.addEventListener('click', async () => {
       const pwd = prompt('관리자 비밀번호를 입력하세요');
       if(!pwd) return;
@@ -113,6 +131,7 @@
       if(!ok){ alert('비밀번호가 올바르지 않습니다.'); return; }
       ADMIN_PWD = (pwd || '').trim();
       document.getElementById('adminBox').style.display = 'block';
+      loadNotices(); // 버튼 보이도록 다시 렌더
     });
     document.getElementById('adminCancel')?.addEventListener('click', () => {
       document.getElementById('adminBox').style.display = 'none';
@@ -143,6 +162,30 @@
       }catch(err){
         console.error(err);
         alert('업로드 중 오류가 발생했습니다');
+      }
+    });
+
+    // 삭제 (이벤트 위임)
+    document.getElementById('noticeList')?.addEventListener('click', async (e) => {
+      const btn = e.target.closest('.btn-del');
+      if(!btn) return;
+      if(!ADMIN_PWD) return alert('관리자 인증이 필요합니다.');
+      const id = btn.getAttribute('data-id');
+      if(!id) return;
+      if(!confirm('정말 삭제할까요? 되돌릴 수 없습니다.')) return;
+      try{
+        const fd = new FormData();
+        fd.append('mode','delete');
+        fd.append('id', id);
+        fd.append('pwd', (ADMIN_PWD || '').trim());
+        const r = await fetch(SCRIPT_URL, { method:'POST', body: fd });
+        const j = await r.json();
+        if(!j.ok) return alert('삭제 실패: ' + (j.error || 'UNKNOWN'));
+        alert('삭제 완료');
+        loadNotices();
+      }catch(err){
+        console.error(err);
+        alert('삭제 중 오류가 발생했습니다');
       }
     });
   </script>
