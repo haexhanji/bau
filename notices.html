@@ -12,7 +12,6 @@
     .btn-edit:hover{ background:#dbeafe; }
     .btn-del{ border:1px solid #ef4444; color:#ef4444; }
     .btn-del:hover{ background:#fee2e2; }
-    /* 간단 모달 */
     .modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.35); z-index:50;}
     .modal .panel{ background:#fff; border-radius:14px; padding:16px; width:min(560px,90vw); border:1px solid #e5e7eb; }
     .row{ display:grid; grid-template-columns:100px 1fr; gap:8px; align-items:center; margin:6px 0; }
@@ -31,13 +30,13 @@
   </header>
 
   <div class="container layout">
-    <aside id="sidebar" class="sidebar">
+    <aside class="sidebar">
       <a class="navbtn" href="movie.html"><span>영화콘텐츠</span></a>
       <a class="navbtn" href="media.html"><span>영상미디어</span></a>
       <a class="navbtn" href="schedule.html"><span>전체일정</span></a>
       <a class="navbtn active" href="notices.html"><span>공지사항 모음</span></a>
       <div class="card" style="margin-top:12px">
-        <div class="small"><b>공통 공지 </b><br/> 앞으로 모든 공지는 이 사이트에 업데이트됩니다.</div>
+        <div class="small"><b>공통 공지</b><br/>앞으로 모든 공지는 이 사이트에 업데이트됩니다.</div>
       </div>
     </aside>
 
@@ -55,13 +54,12 @@
             <label for="ntitle">제목</label>
             <input type="text" id="ntitle" name="title" placeholder="[안내] 제목" required/>
             <label for="nbody">본문</label>
-            <textarea id="nbody" name="body" rows="6" placeholder="공지 본문(줄바꿈은 &lt;br&gt; 사용 가능)" required></textarea>
+            <textarea id="nbody" name="body" rows="6" placeholder="공지 본문(&lt;br&gt; 가능)" required></textarea>
           </div>
           <div style="margin-top:12px; display:flex; gap:8px;">
             <button type="submit" class="btn btn-primary">업로드</button>
             <button type="button" id="adminCancel" class="btn btn-muted">숨기기</button>
           </div>
-          <p class="small muted" style="margin-top:8px;">※ 관리자 비번 인증 후 사용</p>
         </form>
       </div>
 
@@ -77,18 +75,9 @@
   <div id="editModal" class="modal" aria-hidden="true">
     <div class="panel">
       <h3 style="margin:0 0 8px 0;">공지 수정</h3>
-      <div class="row">
-        <label for="editDate">날짜</label>
-        <input type="date" id="editDate"/>
-      </div>
-      <div class="row">
-        <label for="editTitle">제목</label>
-        <input type="text" id="editTitle" placeholder="[안내] 제목"/>
-      </div>
-      <div class="row">
-        <label for="editBody">본문</label>
-        <textarea id="editBody" rows="6" placeholder="공지 본문(줄바꿈은 &lt;br&gt; 사용 가능)"></textarea>
-      </div>
+      <div class="row"><label>날짜</label><input type="date" id="editDate"></div>
+      <div class="row"><label>제목</label><input type="text" id="editTitle"></div>
+      <div class="row"><label>본문</label><textarea id="editBody" rows="6"></textarea></div>
       <div class="actions">
         <button id="editCancel" class="btn btn-muted">취소</button>
         <button id="editSave" class="btn btn-primary">저장</button>
@@ -97,37 +86,30 @@
   </div>
 
   <footer class="footer">
-    <div class="container small">
-      © 2025 백석예대 영상학부 졸업준비위원회.
-    </div>
+    <div class="container small">© 2025 백석예대 영상학부 졸업준비위원회.</div>
   </footer>
 
   <script>
-    // ★ 최신 exec URL로 교체되어 있어야 함
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyO4o5rlRJCynwnuQPUbW3ZSgODlmMl_jBNZXwHqBlOmhJaHv4GggYl8vwKbf1EzYNf/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwc5l9l0iUD1ZajEMDErHcn3KXB8rTsiI7MwAILMpAJ4aDxObVwYnDYZ2XvvfJEaH8X/exec';
     let ADMIN_PWD = null;
 
-    // 초기
     document.addEventListener('DOMContentLoaded', () => {
       const $date = document.getElementById('ndate');
       if ($date) {
-        const t = new Date();
-        const m = String(t.getMonth()+1).padStart(2,'0');
-        const d = String(t.getDate()).padStart(2,'0');
+        const t = new Date(); const m = String(t.getMonth()+1).padStart(2,'0'); const d = String(t.getDate()).padStart(2,'0');
         $date.value = `${t.getFullYear()}-${m}-${d}`;
       }
       loadNotices();
     });
 
-    // 목록
     async function loadNotices(){
-      const r = await fetch(`${SCRIPT_URL}?mode=list&ts=${Date.now()}`, { cache: 'no-store' });
+      const r = await fetch(`${SCRIPT_URL}?mode=list&ts=${Date.now()}`, { cache:'no-store' });
       const items = await r.json();
       renderNotices(Array.isArray(items)?items:[]);
     }
     function renderNotices(items){
       const box = document.getElementById('noticeList');
-      if(!items.length){ box.innerHTML = '<div class="muted small">등록된 공지가 없습니다.</div>'; return; }
+      if(!items.length){ box.innerHTML='<div class="muted small">등록된 공지가 없습니다.</div>'; return; }
       const isAdmin = !!ADMIN_PWD;
       box.innerHTML = items.map(it => `
         <div class="notice" data-id="${it.id}">
@@ -143,7 +125,7 @@
       `).join('');
     }
 
-    // 로그인
+    // 관리자 로그인
     document.getElementById('adminLogin')?.addEventListener('click', async () => {
       const pwd = prompt('관리자 비밀번호');
       if(!pwd) return;
@@ -156,47 +138,33 @@
     });
     document.getElementById('adminCancel')?.addEventListener('click', ()=>{ document.getElementById('adminBox').style.display='none'; });
 
-    // 업로드 (x-www-form-urlencoded)
+    // 업로드(POST)
     document.getElementById('noticeForm')?.addEventListener('submit', async (e)=>{
       e.preventDefault();
       if(!ADMIN_PWD) return alert('관리자 인증 필요');
       const f = e.target;
-      const body = new URLSearchParams({
-        mode: 'add',
-        pwd: ADMIN_PWD,
-        date: f.date.value,
-        title: f.title.value,
-        body: f.body.value
-      });
-      const r = await fetch(SCRIPT_URL, {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'}, body});
+      const body = new URLSearchParams({ mode:'add', pwd:ADMIN_PWD, date:f.date.value, title:f.title.value, body:f.body.value });
+      const r = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'}, body });
       const j = await r.json();
-      if(!j.ok) return alert('업로드 실패: '+(j.error||''));
-      alert('업로드 완료');
-      f.reset();
-      loadNotices();
+      if(!j.ok) return alert('업로드 실패: '+(j.error||'')); alert('업로드 완료'); f.reset(); loadNotices();
     });
 
-    // 수정/삭제(이벤트 위임)
+    // 수정/삭제
     const listBox = document.getElementById('noticeList');
 
-    // ——— 삭제 (mode를 URL 쿼리로 확실히 전달)
+    // 삭제: GET으로 호출
     listBox?.addEventListener('click', async (e)=>{
-      const delBtn = e.target.closest('.btn-del');
-      if(!delBtn) return;
+      const delBtn = e.target.closest('.btn-del'); if(!delBtn) return;
       if(!ADMIN_PWD) return alert('관리자 인증 필요');
-      const id = delBtn.getAttribute('data-id');
-      if(!id) return;
+      const id = delBtn.getAttribute('data-id'); if(!id) return;
       if(!confirm('정말 삭제할까요? 되돌릴 수 없습니다.')) return;
-
       const url = `${SCRIPT_URL}?mode=delete&id=${encodeURIComponent(id)}&pwd=${encodeURIComponent(ADMIN_PWD)}&ts=${Date.now()}`;
-      const r = await fetch(url, { method:'POST', body:'' });
+      const r = await fetch(url, { method:'GET' }); // ← GET
       const j = await r.json();
-      if(!j.ok) return alert('삭제 실패: ' + (j.error||''));
-      alert('삭제 완료');
-      loadNotices();
+      if(!j.ok) return alert('삭제 실패: '+(j.error||'')); alert('삭제 완료'); loadNotices();
     });
 
-    // ——— 수정 열기
+    // 수정 열기
     const modal = document.getElementById('editModal');
     const editDate = document.getElementById('editDate');
     const editTitle = document.getElementById('editTitle');
@@ -204,54 +172,27 @@
     let editingId = null;
 
     listBox?.addEventListener('click', (e)=>{
-      const editBtn = e.target.closest('.btn-edit');
-      if(!editBtn) return;
+      const editBtn = e.target.closest('.btn-edit'); if(!editBtn) return;
       if(!ADMIN_PWD) return alert('관리자 인증 필요');
-
       editingId = editBtn.getAttribute('data-id');
-      // data-* 로 받은 값 채움
       editDate.value  = (editBtn.getAttribute('data-date')||'').trim();
       editTitle.value = decodeURIComponent(editBtn.getAttribute('data-title')||'');
       editBody.value  = decodeURIComponent(editBtn.getAttribute('data-body')||'');
-
-      modal.style.display='flex';
-      modal.setAttribute('aria-hidden','false');
+      modal.style.display='flex'; modal.setAttribute('aria-hidden','false');
     });
 
-    // ——— 수정 취소
-    document.getElementById('editCancel')?.addEventListener('click', ()=>{
-      modal.style.display='none';
-      modal.setAttribute('aria-hidden','true');
-      editingId = null;
-    });
-
-    // ——— 수정 저장 (mode를 URL 쿼리로 전달)
+    // 수정 저장: GET으로 호출
     document.getElementById('editSave')?.addEventListener('click', async ()=>{
-      if(!ADMIN_PWD) return alert('관리자 인증 필요');
-      if(!editingId) return alert('잘못된 요청');
-
-      const url = `${SCRIPT_URL}?mode=update&id=${encodeURIComponent(editingId)}&pwd=${encodeURIComponent(ADMIN_PWD)}&ts=${Date.now()}`;
-      const body = new URLSearchParams({
-        date: editDate.value,
-        title: editTitle.value,
-        body: editBody.value
-      });
-
-      try{
-        const r = await fetch(url, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'}, body });
-        const j = await r.json();
-        if(!j.ok) return alert('수정 실패: ' + (j.error||''));
-        alert('수정 완료');
-        modal.style.display='none';
-        modal.setAttribute('aria-hidden','true');
-        editingId = null;
-        loadNotices();
-      }catch(err){
-        console.error(err); alert('수정 중 오류가 발생했습니다');
-      }
+      if(!ADMIN_PWD) return alert('관리자 인증 필요'); if(!editingId) return alert('잘못된 요청');
+      const url = `${SCRIPT_URL}?mode=update&id=${encodeURIComponent(editingId)}&pwd=${encodeURIComponent(ADMIN_PWD)}&date=${encodeURIComponent(editDate.value)}&title=${encodeURIComponent(editTitle.value)}&body=${encodeURIComponent(editBody.value)}&ts=${Date.now()}`;
+      const r = await fetch(url, { method:'GET' }); // ← GET
+      const j = await r.json();
+      if(!j.ok) return alert('수정 실패: '+(j.error||'')); alert('수정 완료');
+      modal.style.display='none'; modal.setAttribute('aria-hidden','true'); editingId=null; loadNotices();
+    });
+    document.getElementById('editCancel')?.addEventListener('click', ()=>{
+      modal.style.display='none'; modal.setAttribute('aria-hidden','true'); editingId=null;
     });
   </script>
-
-  <script src="js/app.js"></script>
 </body>
 </html>
