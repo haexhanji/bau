@@ -72,8 +72,8 @@
   </footer>
 
   <script>
-    // === 연결할 Apps Script 웹앱 URL (배포 후 교체) ===
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNfOu4vi9WmiUe-mdjCo4Rix10xnFMZbOkY1XkH_TYqtZhYXDD6vmm2sICnNP6OBc4/exec'; // 
+    // === Apps Script 웹앱 URL ===
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNfOu4vi9WmiUe-mdjCo4Rix10xnFMZbOkY1XkH_TYqtZhYXDD6vmm2sICnNP6OBc4/exec';
 
     // 오늘 날짜 기본값
     document.addEventListener('DOMContentLoaded', () => {
@@ -140,28 +140,27 @@
       }catch(e){ console.error(e); return false; }
     }
 
-    // 업로드
+    // 업로드 (FormData 전송: preflight 회피)
     const noticeForm = document.getElementById('noticeForm');
     noticeForm && noticeForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       if(!ADMIN_PWD) return alert('관리자 인증이 필요합니다.');
+
       const fd = new FormData(noticeForm);
-      const payload = Object.fromEntries(fd.entries());
-      payload.mode = 'add';
-      payload.pwd  = ADMIN_PWD;
+      fd.append('mode', 'add');
+      fd.append('pwd', ADMIN_PWD);
 
       try{
-        const r = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+        const r = await fetch(SCRIPT_URL, { method:'POST', body: fd }); // 헤더 지정 X
         const j = await r.json();
         if(!j.ok) return alert('업로드 실패: ' + (j.error || 'UNKNOWN'));
         alert('업로드 완료');
         noticeForm.reset();
         loadNotices();
-      }catch(e){ console.error(e); alert('업로드 중 오류가 발생했습니다'); }
+      }catch(e2){
+        console.error(e2);
+        alert('업로드 중 오류가 발생했습니다');
+      }
     });
 
     // 첫 로드
