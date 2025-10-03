@@ -5,6 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>백석예대 영상학부 졸업준비위원회 (영화콘텐츠, 영상미디어)</title>
   <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    /* --- Popup Notice: inline CSS (필요시 style.css로 이동 가능) --- */
+    :root{
+      --nc-bg: rgba(0,0,0,.5);
+      --nc-card: #111;          /* 다크 모드 기본 */
+      --nc-text: #eee;
+      --nc-border: #2a2a2a;
+      --nc-accent: #4ED78D;
+    }
+    @media (prefers-color-scheme: light){
+      :root{ --nc-card:#fff; --nc-text:#111; --nc-border:#e6e6e6; }
+    }
+    body.modal-open { overflow: hidden; } /* 모달 열릴 때 스크롤 잠금 */
+
+    #notice-modal[hidden]{ display:none; }
+    #notice-modal{ position:fixed; inset:0; z-index:9999; }
+    .notice-backdrop{ position:absolute; inset:0; background:var(--nc-bg); }
+    .notice-card{
+      position:relative; margin: min(8vh,80px) auto 0; max-width: 560px;
+      background:var(--nc-card); color:var(--nc-text); border:1px solid var(--nc-border);
+      border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,.35);
+      padding: 20px 20px 16px; width: calc(100% - 32px);
+    }
+    .notice-close{
+      position:absolute; top:8px; right:10px; width:36px; height:36px;
+      border:none; background:transparent; color:var(--nc-text);
+      font-size:22px; cursor:pointer; border-radius:10px;
+    }
+    .notice-close:hover{ background:rgba(255,255,255,.08); }
+    .notice-card h3{ font-size:18px; margin: 6px 4px 8px; }
+    .notice-card p{ line-height:1.6; margin: 0 4px 14px; }
+    .notice-check{ display:flex; gap:8px; align-items:center; font-size:14px; margin: 0 4px 14px; opacity:.9; }
+    .notice-actions{ display:flex; gap:10px; justify-content:flex-end; }
+    .notice-btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:10px 14px; border-radius:12px; border:1px solid var(--nc-border);
+      text-decoration:none; color:var(--nc-text); background:transparent;
+    }
+    .notice-btn:hover{ border-color:var(--nc-accent); }
+    @media (max-width:480px){ .notice-card{ padding:16px; border-radius:14px; } }
+  </style>
 </head>
 <body>
   <header class="header">
@@ -16,12 +57,11 @@
 
   <div class="container layout">
     <aside id="sidebar" class="sidebar">
-      
       <a class="navbtn" data-route="movie" href="movie.html"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="2" width="20" height="20" rx="2" ry="2"/><circle cx="7" cy="7" r="1"/><circle cx="7" cy="12" r="1"/><circle cx="7" cy="17" r="1"/><path d="M11 7h11M11 12h11M11 17h11"/></svg><span>영화콘텐츠</span></a>
       <a class="navbtn" data-route="media" href="media.html"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>영상미디어</span></a>
       <a class="navbtn" data-route="schedule" href="schedule.html"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>전체일정</span></a>
       <a class="navbtn" data-route="notices" href="notices.html"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 11l18-5v12L3 13v-2z"/><path d="M11 12v7"/></svg><span>공지사항 모음</span></a>
-    
+
       <div class="card" style="margin-top:12px">
         <div class="small"><b>공통 공지 </b><br/> 현재 졸업심사 관련 수요조사가 진행 중입니다. 모든 학생은 반드시 기한 내에 조사에 참여해 주시기 바랍니다. <br><br> 🔔 앞으로 졸업준비위원회 관련 공지 및 수요조사는 해당 사이트에서 진행될 예정입니다.
 
@@ -30,60 +70,78 @@
     </aside>
 
     <main>
-      
-  <div class="card">
-  <h2>영화콘텐츠 — 도록 데이터 수집, 2차 졸업심사 타임테이블 (10/15)</h2>
+      <div class="card">
+        <h2>영화콘텐츠 — 도록 데이터 수집, 2차 졸업심사 타임테이블 (10/15)</h2>
 
- <!-- 10월 1일 타임테이블 -->
-<section>
-  <h3>도록 데이터 수집 드라이브</h3>
-  <p class="muted">
-    아래 버튼을 눌러 문서를 열거나, 아래 임베드를 통해 바로 확인하세요.
-    (임베드가 보이지 않는다면 링크를 통해 확인해주세요)
-  </p>
-  <p>
-    <a class="navbtn" href="https://drive.google.com/drive/folders/1CIqA92gVsa9HcdIdtG93HvSBiYs50YH5?usp=sharing" target="_blank">
-      드라이브 링크 바로가기 ↗
-    </a>
-  </p>
-  <div class="iframe-wrap">
-    <iframe
-      src="https://drive.google.com/embeddedfolderview?id=1CIqA92gVsa9HcdIdtG93HvSBiYs50YH5#grid"
-      title="도록 데이터 수집 드라이브"
-      width="100%"
-      height="600"
-      frameborder="0"
-      allowfullscreen>
-    </iframe>
-  </div>
-</section>
+        <!-- 10월 1일 타임테이블 -->
+        <section>
+          <h3>도록 데이터 수집 드라이브</h3>
+          <p class="muted">
+            아래 버튼을 눌러 문서를 열거나, 아래 임베드를 통해 바로 확인하세요.
+            (임베드가 보이지 않는다면 링크를 통해 확인해주세요)
+          </p>
+          <p>
+            <a class="navbtn" href="https://drive.google.com/drive/folders/1CIqA92gVsa9HcdIdtG93HvSBiYs50YH5?usp=sharing" target="_blank">
+              드라이브 링크 바로가기 ↗
+            </a>
+          </p>
+          <div class="iframe-wrap">
+            <iframe
+              src="https://drive.google.com/embeddedfolderview?id=1CIqA92gVsa9HcdIdtG93HvSBiYs50YH5#grid"
+              title="도록 데이터 수집 드라이브"
+              width="100%"
+              height="600"
+              frameborder="0"
+              allowfullscreen>
+            </iframe>
+          </div>
+        </section>
 
-<!-- 10월 15일 타임테이블 -->
-<section>
-  <h3>10월 15일 타임테이블</h3>
-  <p class="muted">
-    아래 버튼을 눌러 문서를 열거나, 아래 임베드를 통해 바로 확인하세요.
-    (임베드가 보이지 않는다면 링크를 통해 확인해주세요)
-  </p>
-  <p>
-    <a class="navbtn" href="https://drive.google.com/file/d/1PRFFcIFPHB0XoxJsnSKPwQEetdc0EiQa/view?usp=sharing" target="_blank">
-      10월 15일 타임테이블 보기 ↗
-    </a>
-  </p>
-  <div class="iframe-wrap">
-    <iframe
-      src="https://drive.google.com/file/d/1PRFFcIFPHB0XoxJsnSKPwQEetdc0EiQa/preview"
-      title="10월 15일 타임테이블"
-      width="100%"
-      height="600"
-      frameborder="0"
-      allowfullscreen>
-    </iframe>
-  </div>
-</section>
-
-
+        <!-- 10월 15일 타임테이블 -->
+        <section>
+          <h3>10월 15일 타임테이블</h3>
+          <p class="muted">
+            아래 버튼을 눌러 문서를 열거나, 아래 임베드를 통해 바로 확인하세요.
+            (임베드가 보이지 않는다면 링크를 통해 확인해주세요)
+          </p>
+          <p>
+            <a class="navbtn" href="https://drive.google.com/file/d/1PRFFcIFPHB0XoxJsnSKPwQEetdc0EiQa/view?usp=sharing" target="_blank">
+              10월 15일 타임테이블 보기 ↗
+            </a>
+          </p>
+          <div class="iframe-wrap">
+            <iframe
+              src="https://drive.google.com/file/d/1PRFFcIFPHB0XoxJsnSKPwQEetdc0EiQa/preview"
+              title="요10월 15일 타임테이블"
+              width="100%"
+              height="600"
+              frameborder="0"
+              allowfullscreen>
+            </iframe>
+          </div>
+        </section>
+      </div>
     </main>
+  </div>
+
+  <!-- ===== Popup Notice (main 바깥, footer 위로 이동) ===== -->
+  <div id="notice-modal" role="dialog" aria-modal="true" aria-labelledby="notice-title" aria-describedby="notice-desc" hidden>
+    <div class="notice-backdrop" data-close></div>
+    <div class="notice-card" role="document">
+      <button class="notice-close" type="button" aria-label="닫기" data-close>×</button>
+      <h3 id="notice-title">공지사항</h3>
+      <p id="notice-desc">
+        10월 15일 심사 타임테이블이 업데이트되었습니다.<br/>
+        상세 일정은 상단 메뉴의 ‘공지’에서 확인해주세요.
+      </p>
+      <label class="notice-check">
+        <input type="checkbox" id="notice-hide-days" />
+        <span>7일 동안 보지 않기</span>
+      </label>
+      <div class="notice-actions">
+        <a class="notice-btn" href="/notices.html">자세히 보기</a>
+      </div>
+    </div>
   </div>
 
   <footer class="footer">
@@ -92,6 +150,73 @@
     </div>
   </footer>
 
+  <!-- 앱 스크립트 -->
   <script src="js/app.js"></script>
+
+  <!-- ===== Popup Notice: JS ===== -->
+  <script>
+    (function(){
+      // *** 설정값 ***
+      const NOTICE_ID = "2025-10-03-v1";   // 공지 버전(내용 바뀌면 이 값을 꼭 변경!)
+      const HIDE_DAYS = 7;                 // 체크 시 숨김 유지 기간(일)
+
+      const KEY_VERSION = "notice.version";
+      const KEY_HIDE_UNTIL = "notice.hideUntil"; // UTC ms
+
+      const modal = document.getElementById('notice-modal');
+      const closeEls = modal.querySelectorAll('[data-close]');
+      const hideCheckbox = document.getElementById('notice-hide-days');
+
+      // 유틸
+      const now = Date.now();
+      const get = (k)=> localStorage.getItem(k);
+      const set = (k,v)=> localStorage.setItem(k, v);
+
+      function shouldShow(){
+        const savedVersion = get(KEY_VERSION);
+        const hideUntil = parseInt(get(KEY_HIDE_UNTIL) || "0", 10);
+
+        // 새 공지 버전이면 무조건 다시 보여준다
+        if (savedVersion !== NOTICE_ID) return true;
+
+        // 숨김 기간이 지나면 다시 보여준다
+        if (now > hideUntil) return true;
+
+        return false;
+      }
+
+      function openModal(){
+        modal.hidden = false;
+        document.body.classList.add('modal-open');   // 스크롤 잠금
+        const closeBtn = modal.querySelector('.notice-close');
+        closeBtn && closeBtn.focus();
+        set(KEY_VERSION, NOTICE_ID); // 현재 버전 기록
+      }
+
+      function closeModal(){
+        // 체크되어 있으면 HIDE_DAYS 만큼 숨김
+        if (hideCheckbox.checked){
+          const until = now + HIDE_DAYS * 24 * 60 * 60 * 1000;
+          set(KEY_HIDE_UNTIL, String(until));
+        }
+        modal.hidden = true;
+        document.body.classList.remove('modal-open'); // 잠금 해제
+      }
+
+      // 외부 클릭/ESC 닫기
+      closeEls.forEach(el => el.addEventListener('click', closeModal));
+      document.addEventListener('keydown', (e)=>{
+        if (!modal.hidden && e.key === 'Escape') closeModal();
+      });
+
+      // 첫 진입 시 노출 로직
+      if (shouldShow()){
+        openModal();
+      }
+
+      // 전역에서 수동 호출하고 싶으면 window.showNotice() 사용
+      window.showNotice = openModal;
+    })();
+  </script>
 </body>
 </html>
