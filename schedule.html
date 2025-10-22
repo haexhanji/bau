@@ -6,7 +6,8 @@
   <title>전시/상영 수금 선택</title>
   <style>
     :root { --bg:#f6f6f6; --card:#fff; --bd:#e5e5e5; --txt:#111; --muted:#666; }
-    body { margin:0; background:var(--bg); color:var(--txt); font-family: system-ui, -apple-system, Pretendard, Roboto, "Noto Sans KR", Arial, sans-serif; }
+    body { margin:0; background:var(--bg); color:var(--txt);
+      font-family: system-ui, -apple-system, Pretendard, Roboto, "Noto Sans KR", Arial, sans-serif; }
     .container { max-width: 720px; margin: 24px auto; padding: 0 16px; }
     .card { background:var(--card); border:1px solid var(--bd); border-radius:16px; padding:20px; margin-bottom:16px; }
     h1 { margin:0 0 8px; font-size: clamp(22px, 3.5vw, 28px); }
@@ -57,7 +58,7 @@
         <button class="btn" data-val="조장(대표)">조장(대표)</button>
         <button class="btn" data-val="팀원">팀원</button>
       </div>
-      <div class="badge">* </div>
+      <div class="badge">* 영미-상영(C) 및 영콘(H) 경로 동일 질문</div>
     </div>
 
     <!-- D) (영미-전시) 모니터 사용 -->
@@ -67,7 +68,7 @@
         <button class="btn" data-val="사용">사용</button>
         <button class="btn" data-val="미사용">미사용</button>
       </div>
-            <div class="badge">* 개인적으로 모니터를 들고 오신다면 미사용을 선택해주세요</div>
+      <div class="badge">* 개인적으로 모니터를 들고 오신다면 <b>미사용</b>을 선택해주세요.</div>
     </div>
 
     <!-- F) (영미-전시·모니터 사용) 역할 -->
@@ -115,7 +116,7 @@
         <div style="margin-top:8px;">
           <button id="copy" class="copy" disabled>금액/계좌 정보 복사</button>
         </div>
-        <p class="badge" style="margin-top:6px;">* </p>
+        <p class="badge" style="margin-top:6px;">* 입금 시 <b>학번-이름</b>으로 보내주세요.</p>
       </div>
     </div>
 
@@ -140,17 +141,19 @@
   <script>
     // --- 데이터 ---
     const FEES = { 1:23230, 2:54414, 3:116782, 4:27794, 5:23230 };
-    const FEE_LABELS = { 1:"1번 금액 — 23,230원", 2:"2번 금액 — 54,414원", 3:"3번 금액 — 116,782원", 4:"4번 금액 — 27,794원", 5:"5번 금액 — 23,230원" };
+    const FEE_LABELS = {
+      1:"1번 금액 — 23,230원",
+      2:"2번 금액 — 54,414원",
+      3:"3번 금액 — 116,782원",
+      4:"4번 금액 — 27,794원",
+      5:"5번 금액 — 23,230원"
+    };
     const ACCOUNT = { bank:"토스뱅크", number:"1002-2565-8632", holder:"영상학부 졸업준비위원회" };
 
     // --- 상태 ---
     const state = {
-      major: "",         // 영상미디어 / 영화콘텐츠
-      type: "",          // 전시 / 상영 (영미 전용)
-      roleCommon: "",    // 영미-상영 or 영콘의 역할
-      monitorUse: "",    // 사용 / 미사용 (영미-전시 전용)
-      roleExhibit: "",   // 영미-전시에서 모니터 사용 시 역할
-      monitorCount: ""   // 1개 / 3개 (조장일 때)
+      major: "", type: "", roleCommon: "",
+      monitorUse: "", roleExhibit: "", monitorCount: ""
     };
 
     // 유틸
@@ -158,7 +161,9 @@
     const $ = (sel) => document.querySelector(sel);
     const $all = (sel) => Array.from(document.querySelectorAll(sel));
     function setActive(groupSel, value) {
-      $all(groupSel + " .btn").forEach(btn => btn.classList.toggle("active", btn.dataset.val === value));
+      $all(groupSel + " .btn").forEach(btn =>
+        btn.classList.toggle("active", btn.dataset.val === value)
+      );
     }
 
     // 결과 계산
@@ -205,10 +210,20 @@
       $('#holder').textContent = ACCOUNT.holder;
       $('#copy').disabled = false;
 
-      $('#copy').onclick = async () => {
-        const text = `납부 금액: ${FEE_LABELS[res.id]}\\n계좌: ${ACCOUNT.bank} ${ACCOUNT.number} (${ACCOUNT.holder})`;
-        try { await navigator.clipboard.writeText(text); alert('금액/계좌 정보가 복사되었습니다.'); }
-        catch(e){ alert('복사에 실패했습니다. 브라우저 권한을 확인해주세요.'); }
+      // ✅ HTTP에서도 작동하는 복사 방식
+      $('#copy').onclick = () => {
+        const text = `납부 금액: ${FEE_LABELS[res.id]}\n계좌: ${ACCOUNT.bank} ${ACCOUNT.number} (${ACCOUNT.holder})`;
+        const temp = document.createElement('textarea');
+        temp.value = text;
+        document.body.appendChild(temp);
+        temp.select();
+        try {
+          document.execCommand('copy');
+          alert('✅ 금액/계좌 정보가 복사되었습니다.');
+        } catch (e) {
+          alert('❌ 복사 실패. 직접 선택해서 복사해주세요.');
+        }
+        document.body.removeChild(temp);
       };
     }
 
@@ -221,10 +236,12 @@
       state.major = btn.dataset.val;
       setActive('#q-major', state.major);
 
-      // reset 하위
-      state.type = ""; state.roleCommon = ""; state.monitorUse = ""; state.roleExhibit = ""; state.monitorCount = "";
-      setActive('#q-type', ""); setActive('#q-role-common', ""); setActive('#q-monitor-use', "");
-      setActive('#q-role-exhibit', ""); setActive('#q-monitor-count', "");
+      // 하위 리셋
+      state.type = ""; state.roleCommon = ""; state.monitorUse = "";
+      state.roleExhibit = ""; state.monitorCount = "";
+      setActive('#q-type', ""); setActive('#q-role-common', "");
+      setActive('#q-monitor-use', ""); setActive('#q-role-exhibit', "");
+      setActive('#q-monitor-count', "");
 
       show('#section-type', state.major === "영상미디어");
       show('#section-role-common', state.major === "영화콘텐츠");
@@ -240,10 +257,11 @@
       setActive('#q-type', state.type);
 
       state.roleCommon = ""; state.monitorUse = ""; state.roleExhibit = ""; state.monitorCount = "";
-      setActive('#q-role-common', ""); setActive('#q-monitor-use', ""); setActive('#q-role-exhibit', ""); setActive('#q-monitor-count', "");
+      setActive('#q-role-common', ""); setActive('#q-monitor-use', "");
+      setActive('#q-role-exhibit', ""); setActive('#q-monitor-count', "");
 
-      show('#section-role-common', state.type === "상영");     // C
-      show('#section-monitor-use', state.type === "전시");      // D
+      show('#section-role-common', state.type === "상영");   // C
+      show('#section-monitor-use', state.type === "전시");    // D
       show('#section-role-exhibit', false);
       show('#section-monitor-count', false);
       renderResult();
@@ -286,7 +304,7 @@
       renderResult();
     }));
 
-    // 초기 렌더
+    // 초기 상태
     $('#result').style.display = 'none';
   </script>
 </body>
