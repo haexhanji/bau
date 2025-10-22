@@ -29,7 +29,7 @@
     .notice-actions{display:flex;gap:6px;margin-top:8px;}
     .btn-edit{border:1px solid #2563eb;color:#2563eb;padding:4px 8px;border-radius:8px;font-size:12px;}
     .btn-del{border:1px solid #ef4444;color:#ef4444;padding:4px 8px;border-radius:8px;font-size:12px;}
-    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.4);}
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.4);z-index:50;}
     .modal .panel{background:#fff;padding:16px;border-radius:12px;width:min(500px,90vw);}
     .row{display:grid;grid-template-columns:100px 1fr;gap:6px;margin:6px 0;align-items:center;}
     input,textarea{width:100%;padding:6px 8px;border:1px solid #ddd;border-radius:8px;}
@@ -123,7 +123,7 @@
   </div>
 
   <!-- 수정 모달 -->
-  <div id="editModal" class="modal">
+  <div id="editModal" class="modal" aria-hidden="true">
     <div class="panel">
       <h3>공지 수정</h3>
       <div class="row"><label>날짜</label><input id="editDate" type="date"></div>
@@ -187,31 +187,124 @@
     const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwc5l9l0iUD1ZajEMDErHcn3KXB8rTsiI7MwAILMpAJ4aDxObVwYnDYZ2XvvfJEaH8X/exec';
     let ADMIN_PWD=null;let editingId=null;
 
+    // 최초 진입 시 공지 목록 로드 (비관리자도 보기 가능)
+    loadNotices();
+
     document.getElementById('adminLogin').onclick=async()=>{const pwd=prompt('관리자 비밀번호');if(!pwd)return;
       const r=await fetch(`${SCRIPT_URL}?mode=ping&pwd=${encodeURIComponent(pwd)}`);const j=await r.json();
-      if(!j.ok)return alert('비밀번호 오류');ADMIN_PWD=pwd;$('#noticeFormBox').style.display='block';loadNotices();};
+      if(!j.ok)return alert('비밀번호 오류');ADMIN_PWD=pwd;document.getElementById('noticeFormBox').style.display='block';loadNotices();};
 
-    async function loadNotices(){const r=await fetch(`${SCRIPT_URL}?mode=list&ts=${Date.now()}`,{cache:'no-store'});const j=await r.json();renderNotices(j);}
-    function renderNotices(arr){const box=$('#noticeList');if(!Array.isArray(arr)||!arr.length){box.innerHTML='<div class="muted">등록된 공지가 없습니다.</div>';return;}
-      box.innerHTML=arr.map(it=>`<div class="notice" data-id="${it.id}">
-        <div class="date">${it.date}</div><div class="title">${it.title}</div><div class="body">${it.body}</div>
-        ${ADMIN_PWD?`<div class="notice-actions"><button class="btn-edit" data-id="${it.id}" data-date="${it.date}" data-title="${encodeURIComponent(it.title)}" data-body="${encodeURIComponent(it.body)}">수정</button>
-        <button class="btn-del" data-id="${it.id}">삭제</button></div>`:''}</div>`).join('');}
+    async function loadNotices(){
+      try{
+        const r=await fetch(`${SCRIPT_URL}?mode=list&ts=${Date.now()}`,{cache:'no-store'});
+        const j=await r.json();
+        renderNotices(j);
+      }catch(e){
+        document.getElementById('noticeList').innerHTML='<div class="muted">공지 로드 실패</div>';
+      }
+    }
+    function renderNotices(arr){
+      const box=document.getElementById('noticeList');
+      if(!Array.isArray(arr)||!arr.length){box.innerHTML='<div class="muted">등록된 공지가 없습니다.</div>';return;}
+      box.innerHTML=arr.map(it=>`
+        <div class="notice" data-id="${it.id}">
+          <div class="date">${it.date}</div>
+          <div class="title">${it.title}</div>
+          <div class="body">${it.body}</div>
+          ${ADMIN_PWD?`
+            <div class="notice-actions">
+              <button class="btn-edit" data-id="${it.id}" data-date="${it.date}"
+                data-title="${encodeURIComponent(it.title||'')}"
+                data-body="${encodeURIComponent(it.body||'')}">수정</button>
+              <button class="btn-del" data-id="${it.id}">삭제</button>
+            </div>`:``}
+        </div>`).join('');
+    }
 
-    $('#noticeForm').onsubmit=async e=>{e.preventDefault();if(!ADMIN_PWD)return alert('로그인 필요');
-      const b=new URLSearchParams({mode:'add',pwd:ADMIN_PWD,date:$('#ndate').value,title:$('#ntitle').value,body:$('#nbody').value});
-      const r=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:b});const j=await r.json();
-      if(!j.ok)return alert('업로드 실패');alert('등록 완료');e.target.reset();loadNotices();};
+    // 업로드
+    document.getElementById('noticeForm').onsubmit=async(e)=>{
+      e.preventDefault();
+      if(!ADMIN_PWD)return alert('로그인 필요');
+      const b=new URLSearchParams({
+        mode:'add',pwd:ADMIN_PWD,
+        date:document.getElementById('ndate').value,
+        title:document.getElementById('ntitle').value,
+        body:document.getElementById('nbody').value
+      });
+      const r=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:b});
+      const j=await r.json();
+      if(!j.ok)return alert('업로드 실패: '+(j.error||'')); alert('등록 완료');
+      e.target.reset(); loadNotices();
+    };
 
-    $('#noticeList').addEventListener('click',async e=>{
-      const d=e.target.closest('.btn-del');if(d){if(!confirm('삭제할까요?'))return;
-        const id=d.dataset.id;const r=await fetch(`${SCRIPT_URL}?mode=delete&id=${id}&pwd=${ADMIN_PWD}`);const j=await r.json();
-        if(!j.ok)return alert('삭제 실패');alert('삭제 완료');loadNotices();return;}
-      const ed=e.target.closest('.btn-edit');if(ed){editingId=ed.dataset.id;$('#editDate').value=ed.dataset.date;
-        $('#editTitle').value=decodeURIComponent(ed.dataset.title);$('#editBody').value=decodeURIComponent(ed.dataset.body);
-        $('#editModal').style.display='flex';}});
+    // 수정/삭제 핸들러
+    document.getElementById('noticeList').addEventListener('click',async(e)=>{
+      const del=e.target.closest('.btn-del');
+      if(del){
+        if(!ADMIN_PWD)return alert('로그인 필요');
+        if(!confirm('삭제할까요?'))return;
+        const id=del.dataset.id;
+        const r=await fetch(`${SCRIPT_URL}?mode=delete&id=${encodeURIComponent(id)}&pwd=${encodeURIComponent(ADMIN_PWD)}&ts=${Date.now()}`);
+        const j=await r.json();
+        if(!j.ok)return alert('삭제 실패: '+(j.error||'')); alert('삭제 완료'); loadNotices(); return;
+      }
+      const edit=e.target.closest('.btn-edit');
+      if(edit){
+        if(!ADMIN_PWD)return alert('로그인 필요');
+        editingId=edit.dataset.id;
+        document.getElementById('editDate').value=edit.dataset.date||'';
+        document.getElementById('editTitle').value=decodeURIComponent(edit.dataset.title||'');
+        document.getElementById('editBody').value=decodeURIComponent(edit.dataset.body||'');
+        const modal=document.getElementById('editModal');
+        modal.style.display='flex'; modal.setAttribute('aria-hidden','false');
+      }
+    });
 
-    $('#editCancel').onclick=()=>{document.getElementById('editModal').style.display='none';editingId=null;};
-    $('#editSave').onclick=async()=>{if(!ADMIN_PWD)return alert('로그인 필요');if(!editingId)return alert('잘못된 요청');
-      const url=`${SCRIPT_URL}?mode=update&id=${encodeURIComponent(editingId)}&pwd=${encodeURIComponent(ADMIN_PWD)}&date=${encodeURIComponent($('#editDate').value)}&title=${encodeURIComponent($('#editTitle').value)}&body=${encodeURIComponent($('#editBody').value)}&ts=${Date.now()}`;
-      try{const r=await fetch(url,{method:'GET'});const j=await r.json();if(!j.ok)return alert('수정
+    // 수정 저장
+    document.getElementById('editSave').onclick=async()=>{
+      if(!ADMIN_PWD)return alert('로그인 필요');
+      if(!editingId)return alert('잘못된 요청');
+      const url=`${SCRIPT_URL}?mode=update`
+        + `&id=${encodeURIComponent(editingId)}`
+        + `&pwd=${encodeURIComponent(ADMIN_PWD)}`
+        + `&date=${encodeURIComponent(document.getElementById('editDate').value)}`
+        + `&title=${encodeURIComponent(document.getElementById('editTitle').value)}`
+        + `&body=${encodeURIComponent(document.getElementById('editBody').value)}`
+        + `&ts=${Date.now()}`;
+      try{
+        const r=await fetch(url,{method:'GET'});
+        const j=await r.json();
+        if(!j.ok)return alert('수정 실패: '+(j.error||'')); alert('수정 완료');
+        document.getElementById('editModal').style.display='none';
+        document.getElementById('editModal').setAttribute('aria-hidden','true');
+        editingId=null; loadNotices();
+      }catch(e){
+        alert('수정 중 오류가 발생했습니다.');
+      }
+    };
+
+    // 수정 취소 & 모달 바깥 클릭 닫기
+    document.getElementById('editCancel').onclick=()=>{
+      document.getElementById('editModal').style.display='none';
+      document.getElementById('editModal').setAttribute('aria-hidden','true');
+      editingId=null;
+    };
+    document.getElementById('editModal').addEventListener('click',(e)=>{
+      if(e.target.id==='editModal'){
+        e.currentTarget.style.display='none';
+        e.currentTarget.setAttribute('aria-hidden','true');
+        editingId=null;
+      }
+    });
+
+    // 날짜 기본값 세팅
+    (function setToday(){
+      const d=document.getElementById('ndate');
+      if(d){
+        const now=new Date(); const mm=String(now.getMonth()+1).padStart(2,'0'); const dd=String(now.getDate()).padStart(2,'0');
+        d.value=`${now.getFullYear()}-${mm}-${dd}`;
+      }
+    })();
+  </script>
+</body>
+</html>
