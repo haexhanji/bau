@@ -1,110 +1,292 @@
-export default function FeeSelector() {
-  const FEES = {
-    1: 23230,
-    2: 54414,
-    3: 116782,
-    4: 27794,
-    5: 23230,
-  };
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>전시/상영 수금 선택</title>
+  <style>
+    :root { --bg:#f6f6f6; --card:#fff; --bd:#e5e5e5; --txt:#111; --muted:#666; }
+    body { margin:0; background:var(--bg); color:var(--txt); font-family: system-ui, -apple-system, Pretendard, Roboto, "Noto Sans KR", Arial, sans-serif; }
+    .container { max-width: 720px; margin: 24px auto; padding: 0 16px; }
+    .card { background:var(--card); border:1px solid var(--bd); border-radius:16px; padding:20px; margin-bottom:16px; }
+    h1 { margin:0 0 8px; font-size: clamp(22px, 3.5vw, 28px); }
+    h2 { margin:0 0 12px; font-size: 16px; }
+    p.muted { color:var(--muted); margin:6px 0 0; font-size:14px; }
+    .grid { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:8px; }
+    .btn { height:44px; border:1px solid var(--bd); border-radius:12px; background:#fff; cursor:pointer; font-size:14px; }
+    .btn.active { background:#111; color:#fff; border-color:#111; }
+    .row { display:flex; justify-content:space-between; align-items:center; }
+    .hr { height:1px; background:var(--bd); margin:10px 0; }
+    .copy { width:100%; height:44px; border-radius:12px; border:none; background:#111; color:#fff; cursor:pointer; font-size:14px; }
+    .copy[disabled] { background:#ddd; color:#888; cursor:not-allowed; }
+    table { width:100%; border-collapse: collapse; font-size:14px; }
+    th, td { padding:10px; border-top:1px solid var(--bd); text-align:left; }
+    details { margin-top:16px; }
+    .badge { font-size:12px; color:#888; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>전시/상영 수금 선택</h1>
+      <p class="muted">아래 문항을 순서대로 선택하면 납부 금액과 계좌 정보가 표시됩니다.</p>
+    </div>
 
-  const FEE_LABELS = {
-    1: "1번 금액",
-    2: "2번 금액",
-    3: "3번 금액",
-    4: "4번 금액",
-    5: "5번 금액",
-  };
+    <!-- A) 전공 -->
+    <div class="card">
+      <h2>A) 전공을 선택해 주세요</h2>
+      <div class="grid" id="q-major">
+        <button class="btn" data-val="영상미디어">영상미디어(영미)</button>
+        <button class="btn" data-val="영화콘텐츠">영화콘텐츠(영콘)</button>
+      </div>
+    </div>
 
-  const ACCOUNT = {
-    bank: "토스뱅크",
-    number: "1002-2565-8632",
-    holder: "예금주 이름",
-  };
+    <!-- B) (영미 전용) 전시/상영 -->
+    <div class="card" id="section-type" style="display:none;">
+      <h2>B) 진행 형태를 선택해 주세요</h2>
+      <div class="grid" id="q-type">
+        <button class="btn" data-val="전시">전시</button>
+        <button class="btn" data-val="상영">상영</button>
+      </div>
+    </div>
 
-  const [major, setMajor] = React.useState("");
-  const [type, setType] = React.useState("");
-  const [role, setRole] = React.useState("");
-  const [monitorUse, setMonitorUse] = React.useState("");
-  const [monitorCount, setMonitorCount] = React.useState("");
+    <!-- C/H) 역할 (영미-상영 & 영콘) -->
+    <div class="card" id="section-role-common" style="display:none;">
+      <h2>C/H) 역할을 선택해 주세요</h2>
+      <div class="grid" id="q-role-common">
+        <button class="btn" data-val="조장(대표)">조장(대표)</button>
+        <button class="btn" data-val="팀원">팀원</button>
+      </div>
+      <div class="badge">* 영미-상영(C) 및 영콘(H) 경로 동일 질문</div>
+    </div>
 
-  const resetBelow = (level) => {
-    if (level === "major") {
-      setType("");
-      setRole("");
-      setMonitorUse("");
-      setMonitorCount("");
+    <!-- D) (영미-전시) 모니터 사용 -->
+    <div class="card" id="section-monitor-use" style="display:none;">
+      <h2>D) 모니터를 사용하나요?</h2>
+      <div class="grid" id="q-monitor-use">
+        <button class="btn" data-val="사용">사용</button>
+        <button class="btn" data-val="미사용">미사용</button>
+      </div>
+    </div>
+
+    <!-- F) (영미-전시·모니터 사용) 역할 -->
+    <div class="card" id="section-role-exhibit" style="display:none;">
+      <h2>F) 역할을 선택해 주세요</h2>
+      <div class="grid" id="q-role-exhibit">
+        <button class="btn" data-val="조장(대표)">조장(대표)</button>
+        <button class="btn" data-val="팀원">팀원</button>
+      </div>
+    </div>
+
+    <!-- G) (영미-전시·모니터 사용·조장) 모니터 수량 -->
+    <div class="card" id="section-monitor-count" style="display:none;">
+      <h2>G) 모니터 수량을 선택해 주세요</h2>
+      <div class="grid" id="q-monitor-count">
+        <button class="btn" data-val="1개">1개</button>
+        <button class="btn" data-val="3개">3개</button>
+      </div>
+    </div>
+
+    <!-- 결과 -->
+    <div class="card">
+      <h2>결과</h2>
+      <div id="result-empty" class="muted">위 문항을 모두 선택하면 자동으로 계산됩니다.</div>
+      <div id="result" style="display:none;">
+        <div class="row">
+          <span>납부 금액</span>
+          <strong id="fee-label"></strong>
+        </div>
+        <div class="hr"></div>
+        <div class="grid">
+          <div>
+            <div class="badge">은행</div>
+            <div id="bank"></div>
+          </div>
+          <div>
+            <div class="badge">계좌번호</div>
+            <div id="number"></div>
+          </div>
+          <div>
+            <div class="badge">예금주</div>
+            <div id="holder"></div>
+          </div>
+        </div>
+        <div style="margin-top:8px;">
+          <button id="copy" class="copy" disabled>금액/계좌 정보 복사</button>
+        </div>
+        <p class="badge" style="margin-top:6px;">* 예금주 이름은 실제로 입력해 주세요.</p>
+      </div>
+    </div>
+
+    <!-- 참고용 표 -->
+    <details>
+      <summary>참고: 금액 표 보기</summary>
+      <div class="card" style="margin-top:8px;">
+        <table>
+          <thead><tr><th>번호</th><th>설명</th><th>금액</th></tr></thead>
+          <tbody>
+            <tr><td>1번</td><td>영상미디어 전시 — 모니터 미사용(테이블만) 또는 모니터 사용 팀원</td><td>23,230원</td></tr>
+            <tr><td>2번</td><td>영상미디어 전시 — 모니터 1개, 조장(대표)</td><td>54,414원</td></tr>
+            <tr><td>3번</td><td>영상미디어 전시 — 모니터 3개, 조장(대표)</td><td>116,782원</td></tr>
+            <tr><td>4번</td><td>영화콘텐츠 상영 — 조장(대표)</td><td>27,794원</td></tr>
+            <tr><td>5번</td><td>영화콘텐츠 상영 — 팀원</td><td>23,230원</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+
+  <script>
+    // --- 데이터 ---
+    const FEES = { 1:23230, 2:54414, 3:116782, 4:27794, 5:23230 };
+    const FEE_LABELS = { 1:"1번 금액 — 23,230원", 2:"2번 금액 — 54,414원", 3:"3번 금액 — 116,782원", 4:"4번 금액 — 27,794원", 5:"5번 금액 — 23,230원" };
+    const ACCOUNT = { bank:"토스뱅크", number:"1002-2565-8632", holder:"예금주 이름" };
+
+    // --- 상태 ---
+    const state = {
+      major: "",         // 영상미디어 / 영화콘텐츠
+      type: "",          // 전시 / 상영 (영미 전용)
+      roleCommon: "",    // 영미-상영 or 영콘의 역할
+      monitorUse: "",    // 사용 / 미사용 (영미-전시 전용)
+      roleExhibit: "",   // 영미-전시에서 모니터 사용 시 역할
+      monitorCount: ""   // 1개 / 3개 (조장일 때)
+    };
+
+    // 유틸
+    const money = (n) => new Intl.NumberFormat("ko-KR").format(n);
+    const $ = (sel) => document.querySelector(sel);
+    const $all = (sel) => Array.from(document.querySelectorAll(sel));
+    function setActive(groupSel, value) {
+      $all(groupSel + " .btn").forEach(btn => btn.classList.toggle("active", btn.dataset.val === value));
     }
-    if (level === "type") {
-      setRole("");
-      setMonitorUse("");
-      setMonitorCount("");
-    }
-    if (level === "role") {
-      setMonitorUse("");
-      setMonitorCount("");
-    }
-    if (level === "monitorUse") {
-      setMonitorCount("");
-    }
-  };
 
-  const computeFee = () => {
-    if (major === "영상미디어") {
-      if (type === "상영") {
-        if (!role) return null;
-        return role === "조장(대표)" ? { id: 4, amount: FEES[4] } : { id: 5, amount: FEES[5] };
+    // 결과 계산
+    function computeFee() {
+      if (state.major === "영상미디어") {
+        if (state.type === "상영") {
+          if (!state.roleCommon) return null;
+          return state.roleCommon === "조장(대표)" ? { id:4, amount:FEES[4] } : { id:5, amount:FEES[5] };
+        }
+        if (state.type === "전시") {
+          if (!state.monitorUse) return null;
+          if (state.monitorUse === "미사용") return { id:1, amount:FEES[1] };
+          // 사용
+          if (!state.roleExhibit) return null;
+          if (state.roleExhibit === "팀원") return { id:1, amount:FEES[1] };
+          // 조장
+          if (!state.monitorCount) return null;
+          if (state.monitorCount === "1개") return { id:2, amount:FEES[2] };
+          if (state.monitorCount === "3개") return { id:3, amount:FEES[3] };
+        }
+        return null;
       }
-      if (type === "전시") {
-        if (!monitorUse) return null;
-        if (monitorUse === "미사용") {
-          return { id: 1, amount: FEES[1] };
-        }
-        if (!role) return null;
-        if (role === "팀원") {
-          return { id: 1, amount: FEES[1] };
-        }
-        if (!monitorCount) return null;
-        if (monitorCount === "1개") return { id: 2, amount: FEES[2] };
-        if (monitorCount === "3개") return { id: 3, amount: FEES[3] };
+      if (state.major === "영화콘텐츠") {
+        if (!state.roleCommon) return null;
+        return state.roleCommon === "조장(대표)" ? { id:4, amount:FEES[4] } : { id:5, amount:FEES[5] };
       }
       return null;
     }
 
-    if (major === "영화콘텐츠") {
-      if (!role) return null;
-      return role === "조장(대표)" ? { id: 4, amount: FEES[4] } : { id: 5, amount: FEES[5] };
+    // 결과 렌더
+    function renderResult() {
+      const res = computeFee();
+      if (!res) {
+        $('#result').style.display = 'none';
+        $('#result-empty').style.display = 'block';
+        $('#copy').disabled = true;
+        return;
+      }
+      $('#result-empty').style.display = 'none';
+      $('#result').style.display = 'block';
+      $('#fee-label').textContent = `${FEE_LABELS[res.id]} (합계 ${money(res.amount)}원)`;
+      $('#bank').textContent = ACCOUNT.bank;
+      $('#number').textContent = ACCOUNT.number;
+      $('#holder').textContent = ACCOUNT.holder;
+      $('#copy').disabled = false;
+
+      $('#copy').onclick = async () => {
+        const text = `납부 금액: ${FEE_LABELS[res.id]}\\n계좌: ${ACCOUNT.bank} ${ACCOUNT.number} (${ACCOUNT.holder})`;
+        try { await navigator.clipboard.writeText(text); alert('금액/계좌 정보가 복사되었습니다.'); }
+        catch(e){ alert('복사에 실패했습니다. 브라우저 권한을 확인해주세요.'); }
+      };
     }
 
-    return null;
-  };
+    // 가시성 제어
+    function show(id, on) { $(id).style.display = on ? 'block' : 'none'; }
 
-  const result = computeFee();
-  const money = (n) => new Intl.NumberFormat("ko-KR").format(n);
+    // 이벤트 바인딩
+    // A) 전공
+    $all('#q-major .btn').forEach(btn => btn.addEventListener('click', () => {
+      state.major = btn.dataset.val;
+      setActive('#q-major', state.major);
 
-  const canCopy = !!result;
+      // reset 하위
+      state.type = ""; state.roleCommon = ""; state.monitorUse = ""; state.roleExhibit = ""; state.monitorCount = "";
+      setActive('#q-type', ""); setActive('#q-role-common', ""); setActive('#q-monitor-use', "");
+      setActive('#q-role-exhibit', ""); setActive('#q-monitor-count', "");
 
-  const copyAll = async () => {
-    if (!result) return;
-    const text = `납부 금액: ${FEE_LABELS[result.id]} — ${money(result.amount)}원\n계좌: ${ACCOUNT.bank} ${ACCOUNT.number} (${ACCOUNT.holder})`;
-    try {
-      await navigator.clipboard.writeText(text);
-      alert("금액/계좌 정보가 복사되었습니다.");
-    } catch (e) {
-      alert("복사에 실패했습니다. 브라우저 설정을 확인해 주세요.");
-    }
-  };
+      show('#section-type', state.major === "영상미디어");
+      show('#section-role-common', state.major === "영화콘텐츠");
+      show('#section-monitor-use', false);
+      show('#section-role-exhibit', false);
+      show('#section-monitor-count', false);
+      renderResult();
+    }));
 
-  return (
-    <div className="min-h-screen w-full bg-neutral-50 py-8 px-4">
-      <div className="mx-auto max-w-3xl">
-        <header className="mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">전시/상영 수금 선택</h1>
-          <p className="text-neutral-600 mt-2 text-sm md:text-base">
-            아래 문항을 순서대로 선택하면 납부 금액과 계좌 정보가 표시됩니다.
-          </p>
-        </header>
-        {/* 이하 동일 */}
-      </div>
-    </div>
-  );
-}
+    // B) 전시/상영 (영미)
+    $all('#q-type .btn').forEach(btn => btn.addEventListener('click', () => {
+      state.type = btn.dataset.val;
+      setActive('#q-type', state.type);
+
+      state.roleCommon = ""; state.monitorUse = ""; state.roleExhibit = ""; state.monitorCount = "";
+      setActive('#q-role-common', ""); setActive('#q-monitor-use', ""); setActive('#q-role-exhibit', ""); setActive('#q-monitor-count', "");
+
+      show('#section-role-common', state.type === "상영");     // C
+      show('#section-monitor-use', state.type === "전시");      // D
+      show('#section-role-exhibit', false);
+      show('#section-monitor-count', false);
+      renderResult();
+    }));
+
+    // C/H) 역할 (공통)
+    $all('#q-role-common .btn').forEach(btn => btn.addEventListener('click', () => {
+      state.roleCommon = btn.dataset.val;
+      setActive('#q-role-common', state.roleCommon);
+      renderResult();
+    }));
+
+    // D) 모니터 사용 (전시)
+    $all('#q-monitor-use .btn').forEach(btn => btn.addEventListener('click', () => {
+      state.monitorUse = btn.dataset.val;
+      setActive('#q-monitor-use', state.monitorUse);
+
+      state.roleExhibit = ""; state.monitorCount = "";
+      setActive('#q-role-exhibit', ""); setActive('#q-monitor-count', "");
+      show('#section-role-exhibit', state.monitorUse === "사용"); // F
+      show('#section-monitor-count', false);
+      renderResult();
+    }));
+
+    // F) 전시-사용 역할
+    $all('#q-role-exhibit .btn').forEach(btn => btn.addEventListener('click', () => {
+      state.roleExhibit = btn.dataset.val;
+      setActive('#q-role-exhibit', state.roleExhibit);
+
+      state.monitorCount = "";
+      setActive('#q-monitor-count', "");
+      show('#section-monitor-count', state.roleExhibit === "조장(대표)"); // G
+      renderResult();
+    }));
+
+    // G) 모니터 수량
+    $all('#q-monitor-count .btn').forEach(btn => btn.addEventListener('click', () => {
+      state.monitorCount = btn.dataset.val;
+      setActive('#q-monitor-count', state.monitorCount);
+      renderResult();
+    }));
+
+    // 초기 렌더
+    $('#result').style.display = 'none';
+  </script>
+</body>
+</html>
