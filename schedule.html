@@ -1,86 +1,88 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>백석예대 영상학부 졸업준비위원회 수금 페이지</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>전시/상영 수금 선택</title>
   <style>
-    body{margin:0;background:#f6f6f6;color:#111;font-family:system-ui,-apple-system,Pretendard,Roboto,"Noto Sans KR",sans-serif;}
-    .container{max-width:720px;margin:24px auto;padding:0 16px;}
-    .card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,.03);}
-    h1{margin:0 0 8px;font-size:clamp(22px,3.5vw,28px);}
-    h2{margin:0 0 12px;font-size:16px;}
-    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
-    .btn{height:44px;border:1px solid #e5e7eb;border-radius:12px;background:#fff;cursor:pointer;font-size:14px;}
-    .btn.active{background:#111;color:#fff;border-color:#111;}
-    .copy{width:100%;height:44px;border:none;border-radius:12px;background:#111;color:#fff;font-size:14px;cursor:pointer;}
-    .copy[disabled]{background:#ddd;color:#888;cursor:not-allowed;}
-    .muted{color:#666;font-size:14px;}
-    .badge{font-size:12px;color:#888;}
-    table{width:100%;border-collapse:collapse;font-size:14px;}
-    th,td{padding:10px;border-top:1px solid #e5e7eb;text-align:left;}
-    details{margin-top:16px;}
-    /* 공지 영역 */
-    #noticeList{display:flex;flex-direction:column;gap:10px;}
-    .notice{border:1px solid #e5e7eb;border-radius:12px;padding:12px 14px;background:#fff;position:relative;}
-    .notice::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:#2563eb;border-radius:12px 0 0 12px;}
-    .notice .title{font-weight:600;margin-bottom:4px;}
-    .notice .date{font-size:12px;color:#777;margin-bottom:6px;}
-    .notice-actions{display:flex;gap:6px;margin-top:8px;}
-    .btn-edit{border:1px solid #2563eb;color:#2563eb;padding:4px 8px;border-radius:8px;font-size:12px;}
-    .btn-del{border:1px solid #ef4444;color:#ef4444;padding:4px 8px;border-radius:8px;font-size:12px;}
-    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.4);z-index:50;}
-    .modal .panel{background:#fff;padding:16px;border-radius:12px;width:min(500px,90vw);}
-    .row{display:grid;grid-template-columns:100px 1fr;gap:6px;margin:6px 0;align-items:center;}
-    input,textarea{width:100%;padding:6px 8px;border:1px solid #ddd;border-radius:8px;}
+    :root { --bg:#f6f6f6; --card:#fff; --bd:#e5e5e5; --txt:#111; --muted:#666; }
+    body { margin:0; background:var(--bg); color:var(--txt);
+      font-family: system-ui, -apple-system, Pretendard, Roboto, "Noto Sans KR", Arial, sans-serif; }
+    .container { max-width: 720px; margin: 24px auto; padding: 0 16px; }
+    .card { background:var(--card); border:1px solid var(--bd); border-radius:16px; padding:20px; margin-bottom:16px; }
+    h1 { margin:0 0 8px; font-size: clamp(22px, 3.5vw, 28px); }
+    h2 { margin:0 0 12px; font-size: 16px; }
+    p.muted { color:var(--muted); margin:6px 0 0; font-size:14px; }
+    .grid { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:8px; }
+    .btn { height:44px; border:1px solid var(--bd); border-radius:12px; background:#fff; cursor:pointer; font-size:14px; }
+    .btn.active { background:#111; color:#fff; border-color:#111; }
+    .row { display:flex; justify-content:space-between; align-items:center; }
+    .hr { height:1px; background:var(--bd); margin:10px 0; }
+    .copy { width:100%; height:44px; border-radius:12px; border:none; background:#111; color:#fff; cursor:pointer; font-size:14px; }
+    .copy[disabled] { background:#ddd; color:#888; cursor:not-allowed; }
+    table { width:100%; border-collapse: collapse; font-size:14px; }
+    th, td { padding:10px; border-top:1px solid var(--bd); text-align:left; }
+    details { margin-top:16px; }
+    .badge { font-size:12px; color:#888; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="card">
       <h1>전시/상영 수금 선택</h1>
-      <p class="muted">문항을 선택하면 납부 금액과 계좌가 표시됩니다.</p>
+      <p class="muted">아래 문항을 순서대로 선택하면 납부 금액과 계좌 정보가 표시됩니다.</p>
     </div>
 
-    <!-- 선택 질문 -->
+    <!-- A) 전공 -->
     <div class="card">
-      <h2>A) 전공 선택</h2>
+      <h2>A) 전공을 선택해 주세요</h2>
       <div class="grid" id="q-major">
         <button class="btn" data-val="영상미디어">영상미디어(영미)</button>
         <button class="btn" data-val="영화콘텐츠">영화콘텐츠(영콘)</button>
       </div>
     </div>
+
+    <!-- B) (영미 전용) 전시/상영 -->
     <div class="card" id="section-type" style="display:none;">
-      <h2>B) 진행 형태</h2>
+      <h2>B) 진행 형태를 선택해 주세요</h2>
       <div class="grid" id="q-type">
         <button class="btn" data-val="전시">전시</button>
         <button class="btn" data-val="상영">상영</button>
       </div>
     </div>
+
+    <!-- C/H) 역할 -->
     <div class="card" id="section-role-common" style="display:none;">
-      <h2>C/H) 역할</h2>
+      <h2>C/H) 역할을 선택해 주세요</h2>
       <div class="grid" id="q-role-common">
         <button class="btn" data-val="조장(대표)">조장(대표)</button>
         <button class="btn" data-val="팀원">팀원</button>
       </div>
+      <div class="badge">* 영미-상영(C) 및 영콘(H) 경로 동일 질문</div>
     </div>
+
+    <!-- D) 모니터 사용 -->
     <div class="card" id="section-monitor-use" style="display:none;">
-      <h2>D) 모니터 사용</h2>
+      <h2>D) 모니터를 사용하나요?</h2>
       <div class="grid" id="q-monitor-use">
         <button class="btn" data-val="사용">사용</button>
         <button class="btn" data-val="미사용">미사용</button>
       </div>
-      <div class="badge">* 개인 모니터는 ‘미사용’ 선택</div>
+      <div class="badge">* 개인적으로 모니터를 들고 오신다면 <b>미사용</b>을 선택해주세요.</div>
     </div>
+
+    <!-- F) 역할 -->
     <div class="card" id="section-role-exhibit" style="display:none;">
-      <h2>F) 역할 선택</h2>
+      <h2>F) 역할을 선택해 주세요</h2>
       <div class="grid" id="q-role-exhibit">
         <button class="btn" data-val="조장(대표)">조장(대표)</button>
         <button class="btn" data-val="팀원">팀원</button>
       </div>
     </div>
+
+    <!-- G) 모니터 수량 -->
     <div class="card" id="section-monitor-count" style="display:none;">
-      <h2>G) 모니터 수량</h2>
+      <h2>G) 모니터 수량을 선택해 주세요</h2>
       <div class="grid" id="q-monitor-count">
         <button class="btn" data-val="1개">1개</button>
         <button class="btn" data-val="3개">3개</button>
@@ -90,221 +92,120 @@
     <!-- 결과 -->
     <div class="card">
       <h2>결과</h2>
-      <div id="result-empty" class="muted">모든 항목을 선택하세요.</div>
+      <div id="result-empty" class="muted">위 문항을 모두 선택하면 자동으로 계산됩니다.</div>
       <div id="result" style="display:none;">
-        <div><b id="fee-label"></b></div>
-        <div style="margin:8px 0;">
-          <div><span class="badge">은행</span> 토스뱅크</div>
-          <div><span class="badge">계좌번호</span> 1002-2565-8632</div>
-          <div><span class="badge">예금주</span> 영상학부 졸업준비위원회</div>
+        <div class="row">
+          <span>납부 금액</span>
+          <strong id="fee-label"></strong>
         </div>
-        <button id="copy" class="copy" disabled>계좌 복사</button>
+        <div class="hr"></div>
+        <div class="grid">
+          <div>
+            <div class="badge">은행</div>
+            <div id="bank"></div>
+          </div>
+          <div>
+            <div class="badge">계좌번호</div>
+            <div id="number"></div>
+          </div>
+          <div>
+            <div class="badge">예금주</div>
+            <div id="holder"></div>
+          </div>
+        </div>
+        <div style="margin-top:8px;">
+          <button id="copy" class="copy" disabled>계좌 복사</button>
+        </div>
         <p class="badge" style="margin-top:6px;">* 복사 시 “토스뱅크 1002-2565-8632”만 복사됩니다.</p>
       </div>
     </div>
 
-    <!-- 공지 영역 -->
-    <div class="card">
-      <h2>공지사항</h2>
-      <button id="adminLogin" style="font-size:12px;">관리자 로그인</button>
-      <div id="noticeFormBox" style="display:none;margin-top:10px;">
-        <h3>공지 업로드</h3>
-        <form id="noticeForm">
-          <div class="row"><label>날짜</label><input type="date" id="ndate" required></div>
-          <div class="row"><label>제목</label><input type="text" id="ntitle" required></div>
-          <div class="row"><label>본문</label><textarea id="nbody" rows="4" required></textarea></div>
-          <div style="text-align:right;margin-top:8px;">
-            <button type="submit" class="btn" style="border:1px solid #111;color:#111;">업로드</button>
-          </div>
-        </form>
-      </div>
-      <div id="noticeList" style="margin-top:12px;"></div>
-    </div>
-  </div>
-
-  <!-- 수정 모달 -->
-  <div id="editModal" class="modal" aria-hidden="true">
-    <div class="panel">
-      <h3>공지 수정</h3>
-      <div class="row"><label>날짜</label><input id="editDate" type="date"></div>
-      <div class="row"><label>제목</label><input id="editTitle" type="text"></div>
-      <div class="row"><label>본문</label><textarea id="editBody" rows="4"></textarea></div>
-      <div style="text-align:right;margin-top:10px;">
-        <button id="editCancel" class="btn">취소</button>
-        <button id="editSave" class="btn" style="border:1px solid #111;color:#111;">저장</button>
-      </div>
-    </div>
   </div>
 
   <script>
-    // ===== 수금 로직 =====
-    const FEES={1:23230,2:54414,3:116782,4:27794,5:23230};
-    const FEE_LABELS={1:"1번 금액 — 23,230원",2:"2번 금액 — 54,414원",3:"3번 금액 — 116,782원",4:"4번 금액 — 27,794원",5:"5번 금액 — 23,230원"};
-    const state={major:"",type:"",roleCommon:"",monitorUse:"",roleExhibit:"",monitorCount:""};
-    const $=s=>document.querySelector(s);const $all=s=>Array.from(document.querySelectorAll(s));
+    // --- 데이터 ---
+    const FEES = { 1:23230, 2:54414, 3:116782, 4:27794, 5:23230 };
+    const FEE_LABELS = {
+      1:"1번 금액 — 23,230원",
+      2:"2번 금액 — 54,414원",
+      3:"3번 금액 — 116,782원",
+      4:"4번 금액 — 27,794원",
+      5:"5번 금액 — 23,230원"
+    };
+    const ACCOUNT = { bank:"토스뱅크", number:"1002-2565-8632", holder:"영상학부 졸업준비위원회" };
+
+    // --- 상태 ---
+    const state = { major:"", type:"", roleCommon:"", monitorUse:"", roleExhibit:"", monitorCount:"" };
+    const $ = (s)=>document.querySelector(s);
+    const $all = (s)=>Array.from(document.querySelectorAll(s));
     function setActive(group,val){$all(group+' .btn').forEach(b=>b.classList.toggle('active',b.dataset.val===val));}
+
+    // 계산
     function computeFee(){
       if(state.major==='영상미디어'){
         if(state.type==='상영'){if(!state.roleCommon)return null;return state.roleCommon==='조장(대표)'?{id:4}:{id:5};}
-        if(state.type==='전시'){if(!state.monitorUse)return null;if(state.monitorUse==='미사용')return{id:1};
-          if(!state.roleExhibit)return null;if(state.roleExhibit==='팀원')return{id:1};
-          if(!state.monitorCount)return null;return state.monitorCount==='1개'?{id:2}:{id:3};}
+        if(state.type==='전시'){
+          if(!state.monitorUse)return null;
+          if(state.monitorUse==='미사용')return{id:1};
+          if(!state.roleExhibit)return null;
+          if(state.roleExhibit==='팀원')return{id:1};
+          if(!state.monitorCount)return null;
+          return state.monitorCount==='1개'?{id:2}:{id:3};
+        }
       }
       if(state.major==='영화콘텐츠'){if(!state.roleCommon)return null;return state.roleCommon==='조장(대표)'?{id:4}:{id:5};}
       return null;
     }
+
+    // 결과 표시
     function renderResult(){
       const res=computeFee();
       if(!res){$('#result').style.display='none';$('#result-empty').style.display='block';$('#copy').disabled=true;return;}
       $('#result-empty').style.display='none';$('#result').style.display='block';
       $('#fee-label').textContent=FEE_LABELS[res.id];
+      $('#bank').textContent=ACCOUNT.bank;
+      $('#number').textContent=ACCOUNT.number;
+      $('#holder').textContent=ACCOUNT.holder;
       $('#copy').disabled=false;
+
+      // ✅ 계좌 복사만
       $('#copy').onclick=()=>{
         const text='토스뱅크 1002-2565-8632';
-        const t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();
-        try{document.execCommand('copy');alert('✅ '+text+' 복사 완료');}
-        catch(e){alert('❌ 복사 실패');}
+        const t=document.createElement('textarea');
+        t.value=text;
+        document.body.appendChild(t);
+        t.select();
+        try{
+          document.execCommand('copy');
+          alert('✅ '+text+' 복사 완료');
+        }catch(e){
+          alert('❌ 복사 실패. 직접 복사해주세요.');
+        }
         document.body.removeChild(t);
       };
     }
+
     function show(id,on){$(id).style.display=on?'block':'none';}
+
+    // 이벤트 바인딩
     $all('#q-major .btn').forEach(b=>b.addEventListener('click',()=>{state.major=b.dataset.val;setActive('#q-major',state.major);
       state.type='';state.roleCommon='';state.monitorUse='';state.roleExhibit='';state.monitorCount='';
-      setActive('#q-type','');show('#section-type',state.major==='영상미디어');show('#section-role-common',state.major==='영화콘텐츠');
-      show('#section-monitor-use',false);show('#section-role-exhibit',false);show('#section-monitor-count',false);renderResult();}));
+      show('#section-type',state.major==='영상미디어');
+      show('#section-role-common',state.major==='영화콘텐츠');
+      show('#section-monitor-use',false);show('#section-role-exhibit',false);show('#section-monitor-count',false);
+      renderResult();}));
     $all('#q-type .btn').forEach(b=>b.addEventListener('click',()=>{state.type=b.dataset.val;setActive('#q-type',state.type);
       state.roleCommon='';state.monitorUse='';state.roleExhibit='';state.monitorCount='';
-      show('#section-role-common',state.type==='상영');show('#section-monitor-use',state.type==='전시');
-      show('#section-role-exhibit',false);show('#section-monitor-count',false);renderResult();}));
+      show('#section-role-common',state.type==='상영');
+      show('#section-monitor-use',state.type==='전시');
+      show('#section-role-exhibit',false);show('#section-monitor-count',false);
+      renderResult();}));
     $all('#q-role-common .btn').forEach(b=>b.addEventListener('click',()=>{state.roleCommon=b.dataset.val;setActive('#q-role-common',state.roleCommon);renderResult();}));
     $all('#q-monitor-use .btn').forEach(b=>b.addEventListener('click',()=>{state.monitorUse=b.dataset.val;setActive('#q-monitor-use',state.monitorUse);
       state.roleExhibit='';state.monitorCount='';show('#section-role-exhibit',state.monitorUse==='사용');show('#section-monitor-count',false);renderResult();}));
     $all('#q-role-exhibit .btn').forEach(b=>b.addEventListener('click',()=>{state.roleExhibit=b.dataset.val;setActive('#q-role-exhibit',state.roleExhibit);
       state.monitorCount='';show('#section-monitor-count',state.roleExhibit==='조장(대표)');renderResult();}));
     $all('#q-monitor-count .btn').forEach(b=>b.addEventListener('click',()=>{state.monitorCount=b.dataset.val;setActive('#q-monitor-count',state.monitorCount);renderResult();}));
-
-    // ===== 공지 기능 =====
-    const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwc5l9l0iUD1ZajEMDErHcn3KXB8rTsiI7MwAILMpAJ4aDxObVwYnDYZ2XvvfJEaH8X/exec';
-    let ADMIN_PWD=null;let editingId=null;
-
-    // 최초 진입 시 공지 목록 로드 (비관리자도 보기 가능)
-    loadNotices();
-
-    document.getElementById('adminLogin').onclick=async()=>{const pwd=prompt('관리자 비밀번호');if(!pwd)return;
-      const r=await fetch(`${SCRIPT_URL}?mode=ping&pwd=${encodeURIComponent(pwd)}`);const j=await r.json();
-      if(!j.ok)return alert('비밀번호 오류');ADMIN_PWD=pwd;document.getElementById('noticeFormBox').style.display='block';loadNotices();};
-
-    async function loadNotices(){
-      try{
-        const r=await fetch(`${SCRIPT_URL}?mode=list&ts=${Date.now()}`,{cache:'no-store'});
-        const j=await r.json();
-        renderNotices(j);
-      }catch(e){
-        document.getElementById('noticeList').innerHTML='<div class="muted">공지 로드 실패</div>';
-      }
-    }
-    function renderNotices(arr){
-      const box=document.getElementById('noticeList');
-      if(!Array.isArray(arr)||!arr.length){box.innerHTML='<div class="muted">등록된 공지가 없습니다.</div>';return;}
-      box.innerHTML=arr.map(it=>`
-        <div class="notice" data-id="${it.id}">
-          <div class="date">${it.date}</div>
-          <div class="title">${it.title}</div>
-          <div class="body">${it.body}</div>
-          ${ADMIN_PWD?`
-            <div class="notice-actions">
-              <button class="btn-edit" data-id="${it.id}" data-date="${it.date}"
-                data-title="${encodeURIComponent(it.title||'')}"
-                data-body="${encodeURIComponent(it.body||'')}">수정</button>
-              <button class="btn-del" data-id="${it.id}">삭제</button>
-            </div>`:``}
-        </div>`).join('');
-    }
-
-    // 업로드
-    document.getElementById('noticeForm').onsubmit=async(e)=>{
-      e.preventDefault();
-      if(!ADMIN_PWD)return alert('로그인 필요');
-      const b=new URLSearchParams({
-        mode:'add',pwd:ADMIN_PWD,
-        date:document.getElementById('ndate').value,
-        title:document.getElementById('ntitle').value,
-        body:document.getElementById('nbody').value
-      });
-      const r=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:b});
-      const j=await r.json();
-      if(!j.ok)return alert('업로드 실패: '+(j.error||'')); alert('등록 완료');
-      e.target.reset(); loadNotices();
-    };
-
-    // 수정/삭제 핸들러
-    document.getElementById('noticeList').addEventListener('click',async(e)=>{
-      const del=e.target.closest('.btn-del');
-      if(del){
-        if(!ADMIN_PWD)return alert('로그인 필요');
-        if(!confirm('삭제할까요?'))return;
-        const id=del.dataset.id;
-        const r=await fetch(`${SCRIPT_URL}?mode=delete&id=${encodeURIComponent(id)}&pwd=${encodeURIComponent(ADMIN_PWD)}&ts=${Date.now()}`);
-        const j=await r.json();
-        if(!j.ok)return alert('삭제 실패: '+(j.error||'')); alert('삭제 완료'); loadNotices(); return;
-      }
-      const edit=e.target.closest('.btn-edit');
-      if(edit){
-        if(!ADMIN_PWD)return alert('로그인 필요');
-        editingId=edit.dataset.id;
-        document.getElementById('editDate').value=edit.dataset.date||'';
-        document.getElementById('editTitle').value=decodeURIComponent(edit.dataset.title||'');
-        document.getElementById('editBody').value=decodeURIComponent(edit.dataset.body||'');
-        const modal=document.getElementById('editModal');
-        modal.style.display='flex'; modal.setAttribute('aria-hidden','false');
-      }
-    });
-
-    // 수정 저장
-    document.getElementById('editSave').onclick=async()=>{
-      if(!ADMIN_PWD)return alert('로그인 필요');
-      if(!editingId)return alert('잘못된 요청');
-      const url=`${SCRIPT_URL}?mode=update`
-        + `&id=${encodeURIComponent(editingId)}`
-        + `&pwd=${encodeURIComponent(ADMIN_PWD)}`
-        + `&date=${encodeURIComponent(document.getElementById('editDate').value)}`
-        + `&title=${encodeURIComponent(document.getElementById('editTitle').value)}`
-        + `&body=${encodeURIComponent(document.getElementById('editBody').value)}`
-        + `&ts=${Date.now()}`;
-      try{
-        const r=await fetch(url,{method:'GET'});
-        const j=await r.json();
-        if(!j.ok)return alert('수정 실패: '+(j.error||'')); alert('수정 완료');
-        document.getElementById('editModal').style.display='none';
-        document.getElementById('editModal').setAttribute('aria-hidden','true');
-        editingId=null; loadNotices();
-      }catch(e){
-        alert('수정 중 오류가 발생했습니다.');
-      }
-    };
-
-    // 수정 취소 & 모달 바깥 클릭 닫기
-    document.getElementById('editCancel').onclick=()=>{
-      document.getElementById('editModal').style.display='none';
-      document.getElementById('editModal').setAttribute('aria-hidden','true');
-      editingId=null;
-    };
-    document.getElementById('editModal').addEventListener('click',(e)=>{
-      if(e.target.id==='editModal'){
-        e.currentTarget.style.display='none';
-        e.currentTarget.setAttribute('aria-hidden','true');
-        editingId=null;
-      }
-    });
-
-    // 날짜 기본값 세팅
-    (function setToday(){
-      const d=document.getElementById('ndate');
-      if(d){
-        const now=new Date(); const mm=String(now.getMonth()+1).padStart(2,'0'); const dd=String(now.getDate()).padStart(2,'0');
-        d.value=`${now.getFullYear()}-${mm}-${dd}`;
-      }
-    })();
   </script>
 </body>
 </html>
