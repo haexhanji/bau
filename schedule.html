@@ -127,11 +127,11 @@
             <tr><th>번호</th><th>설명</th><th>금액</th></tr>
           </thead>
           <tbody>
-            <tr><td>1번</td><td>영상미디어 전시 — 모니터 미사용(테이블만) 또는 모니터 사용 팀원</td><td>23,230원</td></tr>
-            <tr><td>2번</td><td>영상미디어 전시 — 모니터 1개, 조장(대표)</td><td>54,414원</td></tr>
-            <tr><td>3번</td><td>영상미디어 전시 — 모니터 3개, 조장(대표)</td><td>116,782원</td></tr>
-            <tr><td>4번</td><td>영화콘텐츠 상영 — 조장(대표)</td><td>27,794원</td></tr>
-            <tr><td>5번</td><td>영화콘텐츠 상영 — 팀원</td><td>23,230원</td></tr>
+            <tr><td>1번</td><td>영상미디어 전시 — 모니터 미사용(테이블만) 또는 모니터 사용 팀원</td><td>20,369원</td></tr>
+            <tr><td>2번</td><td>영상미디어 전시 — 모니터 1개, 조장(대표)</td><td>51,553원</td></tr>
+            <tr><td>3번</td><td>영상미디어 전시 — 모니터 3개, 조장(대표)</td><td>113,921원</td></tr>
+            <tr><td>4번</td><td>영화콘텐츠 상영 — 조장(대표)</td><td>22,359원</td></tr>
+            <tr><td>5번</td><td>영화콘텐츠 상영 — 팀원</td><td>20,369원</td></tr>
           </tbody>
         </table>
       </div>
@@ -140,15 +140,17 @@
   </div>
 
   <script>
-    const FEES = {1:23230,2:54414,3:116782,4:27794,5:23230};
+    // 변경된 요금표
+    const FEES = { 1:20369, 2:51553, 3:113921, 4:22359, 5:20369 };
     const FEE_LABELS = {
-      1:"1번 금액 — 23,230원",
-      2:"2번 금액 — 54,414원",
-      3:"3번 금액 — 116,782원",
-      4:"4번 금액 — 27,794원",
-      5:"5번 금액 — 23,230원"
+      1:"1번 금액 — 20,369원",
+      2:"2번 금액 — 51,553원",
+      3:"3번 금액 — 113,921원",
+      4:"4번 금액 — 22,359원",
+      5:"5번 금액 — 20,369원"
     };
     const ACCOUNT = { bank:"토스뱅크", number:"1002-2565-8632", holder:"정민주(모임통장)" };
+
     const state = { major:"", type:"", roleCommon:"", monitorUse:"", roleExhibit:"", monitorCount:"" };
     const $ = (s)=>document.querySelector(s);
     const $all = (s)=>Array.from(document.querySelectorAll(s));
@@ -159,94 +161,91 @@
 
     function computeFee(){
       if(state.major==='영상미디어'){
-        if(state.type==='상영'){if(!state.roleCommon)return null;return state.roleCommon==='조장(대표)'?{id:4}:{id:5};}
+        if(state.type==='상영'){ if(!state.roleCommon) return null; return state.roleCommon==='조장(대표)' ? {id:4} : {id:5}; }
         if(state.type==='전시'){
-          if(!state.monitorUse)return null;
-          if(state.monitorUse==='미사용')return{id:1};
-          if(!state.roleExhibit)return null;
-          if(state.roleExhibit==='팀원')return{id:1};
-          if(!state.monitorCount)return null;
-          return state.monitorCount==='1개'?{id:2}:{id:3};
+          if(!state.monitorUse) return null;
+          if(state.monitorUse==='미사용') return {id:1};
+          if(!state.roleExhibit) return null;
+          if(state.roleExhibit==='팀원') return {id:1};
+          if(!state.monitorCount) return null;
+          return state.monitorCount==='1개' ? {id:2} : {id:3};
         }
       }
-      if(state.major==='영화콘텐츠'){if(!state.roleCommon)return null;return state.roleCommon==='조장(대표)'?{id:4}:{id:5};}
+      if(state.major==='영화콘텐츠'){ if(!state.roleCommon) return null; return state.roleCommon==='조장(대표)' ? {id:4} : {id:5}; }
       return null;
     }
 
     function renderResult(){
       const res=computeFee();
       if(!res){
-        $('#result').style.display='none';
-        $('#result-empty').style.display='block';
-        $('#copy').disabled=true;
+        document.getElementById('result').style.display='none';
+        document.getElementById('result-empty').style.display='block';
+        document.getElementById('copy').disabled=true;
         return;
       }
-      $('#result-empty').style.display='none';
-      $('#result').style.display='block';
-      $('#fee-label').textContent=FEE_LABELS[res.id];
-      $('#bank').textContent=ACCOUNT.bank;
-      $('#number').textContent=ACCOUNT.number;
-      $('#holder').textContent=ACCOUNT.holder;
-      $('#copy').disabled=false;
+      document.getElementById('result-empty').style.display='none';
+      document.getElementById('result').style.display='block';
+      document.getElementById('fee-label').textContent = FEE_LABELS[res.id];
+      document.getElementById('bank').textContent   = ACCOUNT.bank;
+      document.getElementById('number').textContent = ACCOUNT.number;
+      document.getElementById('holder').textContent = ACCOUNT.holder;
+      document.getElementById('copy').disabled=false;
 
-      // ✅ 계좌 복사만
-      $('#copy').onclick=()=>{
-        const text='토스뱅크 1002-2565-8632';
-        const t=document.createElement('textarea');
-        t.value=text;
-        document.body.appendChild(t);
-        t.select();
-        try{
-          document.execCommand('copy');
-          alert('✅ '+text+' 복사 완료');
-        }catch(e){
-          alert('❌ 복사 실패. 직접 복사해주세요.');
-        }
-        document.body.removeChild(t);
+      // 계좌만 복사
+      document.getElementById('copy').onclick = () => {
+        const text = '토스뱅크 1002-2565-8632';
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); alert('✅ '+text+' 복사 완료'); }
+        catch { alert('❌ 복사 실패. 직접 복사해주세요.'); }
+        document.body.removeChild(ta);
       };
     }
 
-    function show(id,on){$(id).style.display=on?'block':'none';}
+    function show(id,on){ document.querySelector(id).style.display = on ? 'block' : 'none'; }
 
+    // 이벤트 바인딩
     $all('#q-major .btn').forEach(b=>b.addEventListener('click',()=>{
-      state.major=b.dataset.val;setActive('#q-major',state.major);
-      state.type='';state.roleCommon='';state.monitorUse='';state.roleExhibit='';state.monitorCount='';
+      state.major=b.dataset.val; setActive('#q-major',state.major);
+      state.type=''; state.roleCommon=''; state.monitorUse=''; state.roleExhibit=''; state.monitorCount='';
       show('#section-type',state.major==='영상미디어');
       show('#section-role-common',state.major==='영화콘텐츠');
-      show('#section-monitor-use',false);show('#section-role-exhibit',false);show('#section-monitor-count',false);
+      show('#section-monitor-use',false); show('#section-role-exhibit',false); show('#section-monitor-count',false);
       renderResult();
     }));
 
     $all('#q-type .btn').forEach(b=>b.addEventListener('click',()=>{
-      state.type=b.dataset.val;setActive('#q-type',state.type);
-      state.roleCommon='';state.monitorUse='';state.roleExhibit='';state.monitorCount='';
+      state.type=b.dataset.val; setActive('#q-type',state.type);
+      state.roleCommon=''; state.monitorUse=''; state.roleExhibit=''; state.monitorCount='';
       show('#section-role-common',state.type==='상영');
       show('#section-monitor-use',state.type==='전시');
-      show('#section-role-exhibit',false);show('#section-monitor-count',false);
+      show('#section-role-exhibit',false); show('#section-monitor-count',false);
       renderResult();
     }));
 
     $all('#q-role-common .btn').forEach(b=>b.addEventListener('click',()=>{
-      state.roleCommon=b.dataset.val;setActive('#q-role-common',state.roleCommon);renderResult();
+      state.roleCommon=b.dataset.val; setActive('#q-role-common',state.roleCommon);
+      renderResult();
     }));
 
     $all('#q-monitor-use .btn').forEach(b=>b.addEventListener('click',()=>{
-      state.monitorUse=b.dataset.val;setActive('#q-monitor-use',state.monitorUse);
-      state.roleExhibit='';state.monitorCount='';
+      state.monitorUse=b.dataset.val; setActive('#q-monitor-use',state.monitorUse);
+      state.roleExhibit=''; state.monitorCount='';
       show('#section-role-exhibit',state.monitorUse==='사용');
       show('#section-monitor-count',false);
       renderResult();
     }));
 
     $all('#q-role-exhibit .btn').forEach(b=>b.addEventListener('click',()=>{
-      state.roleExhibit=b.dataset.val;setActive('#q-role-exhibit',state.roleExhibit);
+      state.roleExhibit=b.dataset.val; setActive('#q-role-exhibit',state.roleExhibit);
       state.monitorCount='';
       show('#section-monitor-count',state.roleExhibit==='조장(대표)');
       renderResult();
     }));
 
     $all('#q-monitor-count .btn').forEach(b=>b.addEventListener('click',()=>{
-      state.monitorCount=b.dataset.val;setActive('#q-monitor-count',state.monitorCount);renderResult();
+      state.monitorCount=b.dataset.val; setActive('#q-monitor-count',state.monitorCount);
+      renderResult();
     }));
   </script>
 </body>
